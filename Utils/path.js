@@ -12,5 +12,10 @@ export const apisPath = {
         validateUsername: 'user/validate/username',
         validateEmail: 'user/validate/email',
         validateMobile: 'user/validate/mobile',
+        userRegister: 'user',
+        verification: 'user/verification',
+        userLogin: 'user/login',
+        checkLogin: 'user/validate/login',
+        userLogout: 'user/logout'
     },
 }
