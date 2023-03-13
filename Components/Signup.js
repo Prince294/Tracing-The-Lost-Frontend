@@ -7,7 +7,8 @@ import {
     Alert,
     TouchableOpacity,
     Dimensions,
-    Keyboard
+    Keyboard,
+    Text
 } from "react-native";
 import { Stack, TextInput, IconButton } from "@react-native-material/core";
 import { AntDesign, FontAwesome5, Entypo } from "@expo/vector-icons";
@@ -32,9 +33,9 @@ export default function Signup(props) {
     const textInput5 = useRef();
     const windowsWidth = Dimensions.get('window').width;
     const [translate, setTranslate] = useState(-props?.onStep * windowsWidth);
-    const [disableBackButton, setDisableBackButton] = useState(
-        props?.onStep == 0 ? true : false
-    );
+    // const [disableBackButton, setDisableBackButton] = useState(
+    //     props?.onStep == 0 ? true : false
+    // );
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
     const [errorMessage, setErrorMessage] = useState("Somthing Gonna Happen!")
@@ -66,9 +67,22 @@ export default function Signup(props) {
     const [OTP, setOTP] = useState("");
 
     useEffect(() => {
-        if (props?.onStep === 4) {
-            textInput5?.current?.focus();
+        if (props?.focus) {
+            if (props?.onStep === 4) {
+                setTimeout(() => {
+                    textInput5?.current?.focus();
+                }, 1000);
+            }
+            else {
+                setTimeout(() => {
+                    textInput0.current.focus()
+                }, 1000);
+            }
         }
+    }, [props?.focus])
+
+    useEffect(() => {
+
         const backAction = () => {
             if (formStep !== 0 && props?.onStep !== 4) {
                 setFormStep(formStep - 1);
@@ -98,7 +112,7 @@ export default function Signup(props) {
 
     useEffect(() => {
         setTranslate(-formStep * windowsWidth);
-        (formStep === 0
+        (formStep === 0 && props?.focus
             ? textInput0
             : formStep === 1
                 ? textInput1
@@ -106,7 +120,8 @@ export default function Signup(props) {
                     ? textInput2
                     : formStep === 3
                         ? textInput3
-                        : textInput5
+                        : formStep === 4 && props?.focus ?
+                            textInput5 : ""
         )?.current?.focus();
     }, [formStep]);
 
@@ -140,7 +155,7 @@ export default function Signup(props) {
             })
             .then((res) => {
                 setLoading(false);
-                props?.pageRender(3);
+                props?.currentStep(-1);
             })
             .catch((err) => {
                 setLoading(false);
@@ -151,7 +166,7 @@ export default function Signup(props) {
     const validateUsername = (val) => {
         http
             .post(apisPath?.user?.validateUsername, { username: val })
-            .then((res) => setvalidUsername(true))
+            .then((res) => { setvalidUsername(true) })
             .catch((err) => {
                 setvalidUsername(false);
             });
@@ -285,7 +300,7 @@ export default function Signup(props) {
             <View style={styles.backBtn}>
                 <TouchableOpacity
                     onPress={() => {
-                        props?.pageRender(0);
+                        props?.mainScreen()
                     }}
                 >
                     <AntDesign name="leftcircle" size={36} color="white" />
@@ -297,7 +312,7 @@ export default function Signup(props) {
 
             <Animated.View style={[{ flexDirection: "row" }, animatedStyle]}>
                 {/* register username view  */}
-                <View style={{ paddingHorizontal: 40, width: "100%" }}>
+                <View style={{ paddingHorizontal: 40, width: windowsWidth }}>
                     <View>
                         <TextInput
                             value={username?.username}
@@ -305,7 +320,6 @@ export default function Signup(props) {
                             variant="standard"
                             onChangeText={nameHandleChange}
                             ref={textInput0}
-                            autoFocus={formStep === 0 ? true : false}
                             onSubmitEditing={handleUsernameClick}
                         />
                     </View>
@@ -325,7 +339,7 @@ export default function Signup(props) {
                 </View>
 
                 {/* register email view  */}
-                <View style={{ paddingHorizontal: 40, width: "100%" }}>
+                <View style={{ paddingHorizontal: 40, width: windowsWidth }}>
                     <View>
                         <TextInput
                             value={email?.email}
@@ -367,7 +381,7 @@ export default function Signup(props) {
                 </View>
 
                 {/* register mobile view  */}
-                <View style={{ paddingHorizontal: 40, width: "100%" }}>
+                <View style={{ paddingHorizontal: 40, width: windowsWidth }}>
                     <View>
                         <TextInput
                             value={mobile?.mobile}
@@ -409,7 +423,7 @@ export default function Signup(props) {
                 </View>
 
                 {/* register password view */}
-                <View style={{ paddingHorizontal: 40, width: "100%" }}>
+                <View style={{ paddingHorizontal: 40, width: windowsWidth }}>
                     <View>
                         <TextInput
                             color={validPassword ? "green" : "red"}
@@ -464,7 +478,7 @@ export default function Signup(props) {
                 </View>
 
                 {/* register OTP view */}
-                <View style={{ paddingHorizontal: 40, width: "100%" }}>
+                <View style={{ paddingHorizontal: 40, width: windowsWidth }}>
                     <View>
                         <TextInput
                             color={validOTP ? "green" : "red"}
@@ -475,6 +489,7 @@ export default function Signup(props) {
                             style={{ marginBottom: 6 }}
                             ref={textInput5}
                             autoFocus={props?.onStep === 4 ? true : false}
+                            onSubmitEditing={handleOTPClick}
                         />
                     </View>
                     {/* <View>
@@ -513,8 +528,8 @@ export default function Signup(props) {
 const styles = StyleSheet.create({
     backBtn: {
         position: "absolute",
-        top: 40,
-        left: 30,
+        top: 32,
+        left: 25,
         zIndex: 1,
     },
 

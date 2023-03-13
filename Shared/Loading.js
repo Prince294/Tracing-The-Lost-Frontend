@@ -1,6 +1,7 @@
-import { Image, Keyboard, StyleSheet, Text, View } from 'react-native'
+import { Dimensions, Image, Keyboard, StyleSheet, Text, View } from 'react-native'
 import React, { useEffect } from 'react'
 
+const { height, width } = Dimensions.get('window');
 export default function Loading() {
     useEffect(() => {
         Keyboard.dismiss();
@@ -17,16 +18,17 @@ export default function Loading() {
 
 const styles = StyleSheet.create({
     loadingCont: {
-        height: "100%",
-        width: '100%',
+        height: height,
+        width: width,
         backgroundColor: 'rgba(0,0,0,0.6)',
         position: 'absolute',
         justifyContent: "center",
         alignItems: "center",
-        zIndex: 2,
+        zIndex: 1000,
+
     },
     loading: {
         height: 140,
-        width: 140,
+        width: 140
     },
 })

@@ -1,21 +1,33 @@
 import React, { Component, useEffect, useRef, useState } from 'react';
 import { Stack, TextInput, IconButton } from "@react-native-material/core";
-import { Image, StyleSheet, Alert, TouchableOpacity, View, BackHandler } from 'react-native';
+import { Image, StyleSheet, Alert, TouchableOpacity, View, BackHandler, Keyboard } from 'react-native';
 import Animated, { useAnimatedStyle, withTiming } from "react-native-reanimated";
-import { AntDesign } from '@expo/vector-icons';
+import { AntDesign, FontAwesome5, Entypo } from "@expo/vector-icons";
 import { apisPath } from '../Utils/path';
 import http from './Services/utility';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Loading from '../Shared/Loading';
+import Error from '../Shared/Error';
 
 
 export default function Login(props) {
     const textInput0 = useRef();
     const textInput1 = useRef();
     const [loading, setLoading] = useState(false)
+    const [error, setError] = useState(false)
+    const [errMessage, setErrMessage] = useState("")
     const [password, setPassword] = useState("");
     const [validData, setValidData] = useState(false)
     const [usernameEmail, setUsernameEmail] = useState("")
+
+    useEffect(() => {
+        if (props?.focus) {
+            setTimeout(() => {
+                textInput0.current.focus()
+            }, 1000);
+        }
+    }, [props?.focus])
+
 
     useEffect(() => {
         const backAction = () => {
@@ -25,7 +37,7 @@ export default function Login(props) {
                     onPress: () => null,
                     style: 'cancel',
                 },
-                { text: 'YES', onPress: () => props?.pageRender(0) },
+                { text: 'YES', onPress: () => props?.mainScreen() },
             ]);
             return true;
         };
@@ -57,7 +69,7 @@ export default function Login(props) {
                 AsyncStorage.setItem('session', res?.data?.session_id);
                 props?.currentStep(res?.data?.onStep)
             }
-            ).catch(err => { console.log(err) })
+            ).catch(err => { setLoading(false); setError(true); setErrMessage(err?.response?.data?.message) })
         }
         else {
             http.post(apisPath?.user?.userLogin, { password: password, username: usernameEmail }).then(res => {
@@ -65,8 +77,12 @@ export default function Login(props) {
                 AsyncStorage.setItem('session', res?.data?.session_id);
                 props?.currentStep(res?.data?.onStep)
             }
-            ).catch(err => { console.log(err) })
+            ).catch(err => { setLoading(false); setError(true); setErrMessage(err?.response?.data?.message) })
         };
+    }
+
+    const handleErrorClick = () => {
+        setError(false);
     }
 
 
@@ -74,7 +90,7 @@ export default function Login(props) {
 
         <Stack spacing={2} style={{ flex: 1, flexDirection: 'column' }}>
             <View style={styles.backBtn}>
-                <TouchableOpacity onPress={() => { props?.pageRender(0); }}>
+                <TouchableOpacity onPress={() => { props?.mainScreen() }}>
                     <AntDesign name="leftcircle" size={36} color='#b396cb' />
                 </TouchableOpacity>
             </View>
@@ -85,25 +101,30 @@ export default function Login(props) {
             <View style={[{ flexDirection: 'row' }]}>
                 <View style={{ paddingHorizontal: 40, width: "100%" }}>
                     <View >
-                        <TextInput value={usernameEmail} label="Username/Email" variant="standard" onChangeText={(el) => setUsernameEmail(el)} style={{ marginBottom: 6 }} ref={textInput0} autoFocus={true} />
+                        <TextInput value={usernameEmail} label="Username/Email" variant="standard" onChangeText={(el) => setUsernameEmail(el)} style={{ marginBottom: 6 }} ref={textInput0} />
                     </View>
                     <View>
-                        <TextInput value={password} label="Enter Password" variant="standard" onChangeText={(el) => setPassword(el)} ref={textInput1} />
+                        <TextInput value={password} label="Enter Password" variant="standard" onChangeText={(el) => setPassword(el)} ref={textInput1} onSubmitEditing={handleFormSubmit} />
                     </View>
-                    <View style={{ top: 80, alignItems: 'flex-end' }}>
-                        <TouchableOpacity onPress={() => {
-                            if (validData) {
-                                handleFormSubmit();
-                            }
-                        }}>
-                            <AntDesign name="checkcircle" size={60} color={validData ? 'green' : 'red'} />
-                        </TouchableOpacity>
-                    </View>
+                    <Animated.View style={{ top: 80, alignItems: 'flex-end' }}>
+                        {validData ? <TouchableOpacity onPress={handleFormSubmit}>
+                            <FontAwesome5
+                                name="arrow-circle-right"
+                                size={60}
+                                color="green"
+                            />
+                        </TouchableOpacity> :
+                            <Entypo name="circle-with-cross" size={60} color="red" />
+                        }
+                    </Animated.View>
                 </View>
             </View>
 
             {loading && (
                 <Loading />
+            )}
+            {error && (
+                <Error message={errMessage} errorClose={handleErrorClick} />
             )}
         </Stack>
     );

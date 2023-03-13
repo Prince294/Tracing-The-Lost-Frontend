@@ -1,7 +1,8 @@
-import { Keyboard, StyleSheet, Text, View } from 'react-native'
+import { Dimensions, Keyboard, StyleSheet, Text, View } from 'react-native'
 import React, { useEffect } from 'react'
 import { Button } from '@react-native-material/core'
 
+const { height, width } = Dimensions.get('window');
 export default function Error(props) {
     useEffect(() => {
         Keyboard.dismiss();
@@ -10,8 +11,8 @@ export default function Error(props) {
     return (
         <View style={styles.errorCont}>
             <View style={styles.error}>
-                <Text>{props.message}</Text>
-                <Button title="Ok" onPress={() => props?.errorClose()}></Button>
+                <Text style={{ fontSize: 19, fontWeight: "700", color: "red" }}>{props.message}</Text>
+                <Button title="Ok" onPress={() => props?.errorClose()} style={{ backgroundColor: "red", paddingHorizontal: 5 }}></Button>
             </View>
         </View>
     )
@@ -19,17 +20,19 @@ export default function Error(props) {
 
 const styles = StyleSheet.create({
     errorCont: {
-        height: "100%",
-        width: '100%',
-        backgroundColor: 'rgba(0,0,0,0.6)',
         position: 'absolute',
+        height: height,
+        width: width,
+        top: 0,
+        left: 0,
+        backgroundColor: 'rgba(0,0,0,0.6)',
         justifyContent: "center",
         alignItems: "center",
-        zIndex: 2,
+        zIndex: 1000,
         paddingHorizontal: 30
     },
     error: {
-        minWidth: '80%',
+        minWidth: '85%',
         backgroundColor: 'white',
         borderRadius: 10,
         padding: 20,
