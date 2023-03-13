@@ -13,16 +13,20 @@ import { apisPath } from '../Utils/path';
 import Loading from '../Shared/Loading';
 import Error from '../Shared/Error';
 import SideBar from './SideBar';
+import HomeContent from './HomeContent';
+import History from './History';
+import Setting from './Setting';
 
 
 const { height, width } = Dimensions.get('window');
-const menuListWidth = (5 * width / 6) + 10;
+const menuListWidth = width;
 export default function Home(props) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false)
-    const [menuOpen, setMenuOpen] = useState(1);
+    const [menuOpen, setMenuOpen] = useState(0);
     const [userData, setUserData] = useState({});
-    const [errMessage, setErrMessage] = useState("")
+    const [errMessage, setErrMessage] = useState("");
+    const [listOpen, setListOpen] = useState(0);
 
     useEffect(() => {
         userDetails();
@@ -90,23 +94,20 @@ export default function Home(props) {
 
     return (
         <View style={styles.container}>
-            <Animated.View style={[barAnimatedStyle]}>
-                <AppBar
-                    title="Home"
-                    centerTitle={true}
-                    leading={props => (
-                        <IconButton onPress={handleMenuClick} icon={props => <Icon name="menu" {...props} />} {...props} />
-                    )}
-                    trailing={props => (
-                        <Button key="logout" variant="text" title="Logout" {...props} onPress={handleLogout} />
-                    )}
-                />
+            <Animated.View style={[styles.appBar, barAnimatedStyle]}>
+                <View style={{ position: 'absolute', zIndex: 100, left: 6 }}>
+                    <IconButton onPress={handleMenuClick} icon={props => <Icon name="menu" {...props} />} />
+                </View>
+                <Text style={styles.heading}>Tracing The Lost</Text>
             </Animated.View>
 
             <Animated.View style={[styles.menuContainer, animatedStyle]}>
-                <SideBar data={userData} />
+                <SideBar data={userData} logout={handleLogout} handleBack={handleMenuClick} />
             </Animated.View>
-            <Text>Home Screen</Text>
+
+            <View style={styles.contentSection}>
+                {listOpen === 0 ? <HomeContent data={userData} /> : listOpen === 1 ? <History /> : <Setting />}
+            </View>
 
             {loading && (
                 <Loading />
@@ -135,5 +136,23 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         borderColor: 'black',
         borderWidth: 1
+    },
+    appBar: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 5,
+        backgroundColor: 'rgba(30,180,170,0.1)'
+
+    },
+    contentSection: {
+        width: width,
+        height: '100%',
+    },
+    heading: {
+        flex: 1,
+        textAlign: 'center',
+        paddingVertical: 15,
+        fontSize: 16,
+        fontWeight: '600'
     }
 });

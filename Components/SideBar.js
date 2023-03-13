@@ -1,14 +1,17 @@
 import { Dimensions, Image, StyleSheet, Text, View } from 'react-native'
 import React from 'react'
-import { Divider, ListItem } from '@react-native-material/core';
+import { Divider, IconButton, ListItem } from '@react-native-material/core';
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, AntDesign } from '@expo/vector-icons';
 
 const { height, width } = Dimensions.get('window');
 export default function SideBar(props) {
     const { data } = props;
     return (
         <View style={styles.sidebar}>
+            <View style={{ position: 'absolute', right: 10, zIndex: 1 }}>
+                <IconButton onPress={props?.handleBack} icon={props => <Ionicons name="arrow-back-outline" size={24} color="black" />} />
+            </View>
             <View style={styles.profileSection}>
                 <View>
                     {data?.profile?.length > 0 ?
@@ -45,6 +48,15 @@ export default function SideBar(props) {
                     leading={<Ionicons name="settings" size={22} color="black" />}
                     style={styles.listItem}
                 />
+                <ListItem
+                    title="Logout"
+                    leading={<AntDesign name="logout" size={22} color="black" />}
+                    style={styles.listItem}
+                    onPress={() => props?.logout()}
+                />
+            </View>
+            <View style={styles.bottamText}>
+                <Text>v1.0 &copy;Tracing The Lost</Text>
             </View>
         </View>
     )
@@ -54,6 +66,7 @@ const styles = StyleSheet.create({
     sidebar: {
         flex: 1,
         width: '100%',
+        height: '100%',
         overflow: 'hidden',
         flexDirection: 'column',
         rowGap: 20
@@ -80,9 +93,17 @@ const styles = StyleSheet.create({
         width: 100, height: 100, borderRadius: 60
     },
     listItems: {
-        backgroundColor: 'red'
+        backgroundColor: 'white',
+        flexDirection: 'column',
     },
     listItem: {
-        backgroundColor: 'red'
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    bottamText: {
+        position: 'absolute',
+        bottom: 40,
+        width: '100%',
+        alignItems: 'center'
     }
 })
