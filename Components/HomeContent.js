@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Alert, Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { HStack, Banner, Button } from "@react-native-material/core";
 
 
@@ -10,27 +10,27 @@ export default function HomeContent(props) {
     const [progress, setProgress] = useState(0)
     var interval;
 
-    useEffect(() => {
-        if (progress >= 100) {
-            clearInterval(interval)
-        }
-    }, [progress])
-
 
     useEffect(() => {
         if (traceBtn) {
-            setTimeout(() => {
-                setTraceBtn(false);
-                interval = setInterval(() => {
-                    setProgress((prev) => prev + 1);
-                }, 10);
-            }, 1000);
+            interval = setTimeout(() => {
+                setProgress((prev) => prev + 1);
+            }, 10);
         }
-        if (progress >= 100)
-            return () => clearInterval(interval)
-    }, [traceBtn])
+        if (progress >= 100) {
+            setTraceBtn(false);
+            setProgress(0);
 
-
+            Alert.alert("Detail Found!", "Suspect details are send to your police station, Thanks for helping", [
+                {
+                    text: 'OK',
+                    onPress: () => null,
+                    style: 'cancel',
+                },
+            ])
+        }
+        return () => clearTimeout(interval)
+    }, [traceBtn, progress]);
 
 
     return (
@@ -38,7 +38,7 @@ export default function HomeContent(props) {
             {!data?.is_verified_user && <Banner
                 text="Please Complete Your KYC."
                 buttons={
-                    <Button key="complete-kyc" variant="text" title="Complete KYC" compact />
+                    <Button key="complete-kyc" variant="text" title="Complete KYC" onPress={() => props?.setting()} compact />
                 }
                 style={styles.popup}
             />}

@@ -118,7 +118,7 @@ export default function Home(props) {
             </Animated.View>
 
             <View style={styles.contentSection}>
-                {listOpen === 0 ? <HomeContent data={userData} /> : listOpen === 1 ? <History /> : <Setting />}
+                {listOpen === 0 ? <HomeContent data={userData} setting={handleSetting} /> : listOpen === 1 ? <History /> : <Setting />}
             </View>
 
             {loading && (

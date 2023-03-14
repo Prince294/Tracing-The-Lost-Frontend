@@ -16,9 +16,9 @@ export default function Login(props) {
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState(false)
     const [errMessage, setErrMessage] = useState("")
+    const [usernameEmail, setUsernameEmail] = useState("prince");
     const [password, setPassword] = useState("Admin@1234");
     const [validData, setValidData] = useState(true)
-    const [usernameEmail, setUsernameEmail] = useState("prince1")
 
     useEffect(() => {
         if (props?.focus) {
