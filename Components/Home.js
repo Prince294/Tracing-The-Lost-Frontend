@@ -92,6 +92,18 @@ export default function Home(props) {
         props?.landingPageHandler(true);
     }
 
+    const handleHome = () => {
+        setListOpen(0);
+    }
+
+    const handleHistory = () => {
+        setListOpen(1);
+    }
+
+    const handleSetting = () => {
+        setListOpen(2);
+    }
+
     return (
         <View style={styles.container}>
             <Animated.View style={[styles.appBar, barAnimatedStyle]}>
@@ -102,7 +114,7 @@ export default function Home(props) {
             </Animated.View>
 
             <Animated.View style={[styles.menuContainer, animatedStyle]}>
-                <SideBar data={userData} logout={handleLogout} handleBack={handleMenuClick} />
+                <SideBar data={userData} logout={handleLogout} handleBack={handleMenuClick} home={handleHome} history={handleHistory} setting={handleSetting} />
             </Animated.View>
 
             <View style={styles.contentSection}>

@@ -10,7 +10,7 @@ import {
     Keyboard,
     Text
 } from "react-native";
-import { Stack, TextInput, IconButton } from "@react-native-material/core";
+import { Stack, TextInput, IconButton, Button } from "@react-native-material/core";
 import { AntDesign, FontAwesome5, Entypo } from "@expo/vector-icons";
 import { apisPath, paths } from "../Utils/path.js";
 import http from "./Services/utility.js";
@@ -23,7 +23,7 @@ import Loading from "../Shared/Loading.js";
 import Error from "../Shared/Error.js";
 
 
-
+const windowsWidth = Dimensions.get('window').width;
 export default function Signup(props) {
     const textInput0 = useRef();
     const textInput1 = useRef();
@@ -31,15 +31,12 @@ export default function Signup(props) {
     const textInput3 = useRef();
     const textInput4 = useRef();
     const textInput5 = useRef();
-    const windowsWidth = Dimensions.get('window').width;
     const [translate, setTranslate] = useState(-props?.onStep * windowsWidth);
-    // const [disableBackButton, setDisableBackButton] = useState(
-    //     props?.onStep == 0 ? true : false
-    // );
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
     const [errorMessage, setErrorMessage] = useState("Somthing Gonna Happen!")
     const [registerData, setregisterData] = useState({
+        name: "",
         username: "",
         email: "",
         mobile: "",
@@ -115,13 +112,9 @@ export default function Signup(props) {
         (formStep === 0 && props?.focus
             ? textInput0
             : formStep === 1
-                ? textInput1
-                : formStep === 2
-                    ? textInput2
-                    : formStep === 3
-                        ? textInput3
-                        : formStep === 4 && props?.focus ?
-                            textInput5 : ""
+                ? textInput3
+                : formStep === 2 && props?.focus ?
+                    textInput5 : ""
         )?.current?.focus();
     }, [formStep]);
 
@@ -129,14 +122,14 @@ export default function Signup(props) {
     const handleFormSubmit = () => {
         setLoading(true);
         http
-            .post(apisPath?.user?.userRegister, {
+            .post(apisPath?.user?.user, {
                 ...registerData,
                 password: password,
             })
             .then((res) => {
                 setLoading(false);
                 AsyncStorage.setItem("session", res?.data?.session_id);
-                setFormStep(4);
+                setFormStep(2);
             })
             .catch((err) => {
                 setLoading(false);
@@ -189,24 +182,13 @@ export default function Signup(props) {
     };
 
     // next button click handler
-    const handleUsernameClick = () => {
-        if (validUsername) {
-            setregisterData({ ...registerData, username: username?.username });
+    const handleUserEmailMobileClick = () => {
+        if (validUsername && validEmail && validMobile) {
+            setregisterData({ ...registerData, username: username?.username, email: email?.email, mobile: mobile?.mobile });
             setFormStep(1);
         }
     };
-    const handleEmailClick = () => {
-        if (validEmail) {
-            setregisterData({ ...registerData, email: email?.email });
-            setFormStep(2);
-        }
-    };
-    const handleMobileClick = () => {
-        if (validMobile) {
-            setregisterData({ ...registerData, mobile: mobile?.mobile });
-            setFormStep(3);
-        }
-    };
+
     const handlePasswordClick = () => {
         if (validPassword && validRePassword) {
             handleFormSubmit();
@@ -218,6 +200,40 @@ export default function Signup(props) {
             handleFormVerificationSubmit();
         }
     };
+
+
+    const registerAgainHandler = () => {
+        Alert.alert("You Will Loss the current Login", "Are you sure you want to go back?", [
+            {
+                text: "Cancel",
+                onPress: () => null,
+                style: "cancel",
+            },
+            {
+                text: "YES", onPress: () => handleLogout()
+            },
+        ]);
+    }
+
+    const handleLogout = async () => {
+        setLoading(true);
+        let session = await AsyncStorage.getItem('session')
+        console.log(session);
+        http.post(apisPath?.user?.userDelete, { session: session }).then(async (res) => {
+            await AsyncStorage.removeItem('session');
+            setFormStep(0);
+            setLoading(false);
+        }
+        ).catch(err => {
+            setLoading(false);
+            setError(true);
+            setErrorMessage(err?.response?.data?.message)
+        })
+    }
+
+    const ReRegisterAgainHandler = () => {
+        setFormStep(0);
+    }
 
     // handle change all functions
     const nameHandleChange = (el) => {
@@ -284,6 +300,7 @@ export default function Signup(props) {
         setError(false);
     }
 
+
     // animation properties
     const animatedStyle = useAnimatedStyle(() => {
         return {
@@ -311,8 +328,8 @@ export default function Signup(props) {
             </View>
 
             <Animated.View style={[{ flexDirection: "row" }, animatedStyle]}>
-                {/* register username view  */}
-                <View style={{ paddingHorizontal: 40, width: windowsWidth }}>
+                {/* register username, email, and mobile view  */}
+                <View style={styles.formCont}>
                     <View>
                         <TextInput
                             value={username?.username}
@@ -320,26 +337,10 @@ export default function Signup(props) {
                             variant="standard"
                             onChangeText={nameHandleChange}
                             ref={textInput0}
-                            onSubmitEditing={handleUsernameClick}
+                            onSubmitEditing={() => textInput1?.current?.focus()}
+                            color={validUsername ? "green" : 'red'}
                         />
                     </View>
-                    <View style={{ top: 80, alignItems: "flex-end" }}>
-                        {validUsername ? (
-                            <TouchableOpacity onPress={handleUsernameClick}>
-                                <FontAwesome5
-                                    name="arrow-circle-right"
-                                    size={60}
-                                    color="green"
-                                />
-                            </TouchableOpacity>
-                        ) : (
-                            <Entypo name="circle-with-cross" size={60} color="red" />
-                        )}
-                    </View>
-                </View>
-
-                {/* register email view  */}
-                <View style={{ paddingHorizontal: 40, width: windowsWidth }}>
                     <View>
                         <TextInput
                             value={email?.email}
@@ -347,41 +348,11 @@ export default function Signup(props) {
                             variant="standard"
                             onChangeText={emailHandleChange}
                             ref={textInput1}
-                            autoFocus={true}
-                            onSubmitEditing={handleEmailClick}
+                            onSubmitEditing={() => textInput2?.current?.focus()}
+                            color={validEmail ? "green" : 'red'}
+                            style={{ color: 'red' }}
                         />
                     </View>
-                    <View
-                        style={{
-                            flexDirection: "row",
-                            top: 80,
-                            justifyContent: "space-between",
-                        }}
-                    >
-                        <TouchableOpacity
-                            onPress={() => {
-                                setFormStep(0);
-                            }}
-                        >
-                            <AntDesign name="leftcircle" size={60} color="black" />
-                        </TouchableOpacity>
-
-                        {validEmail ? (
-                            <TouchableOpacity onPress={handleEmailClick}>
-                                <FontAwesome5
-                                    name="arrow-circle-right"
-                                    size={60}
-                                    color="green"
-                                />
-                            </TouchableOpacity>
-                        ) : (
-                            <Entypo name="circle-with-cross" size={60} color="red" />
-                        )}
-                    </View>
-                </View>
-
-                {/* register mobile view  */}
-                <View style={{ paddingHorizontal: 40, width: windowsWidth }}>
                     <View>
                         <TextInput
                             value={mobile?.mobile}
@@ -389,27 +360,13 @@ export default function Signup(props) {
                             variant="standard"
                             onChangeText={mobileHandleChange}
                             ref={textInput2}
-                            autoFocus={formStep === 2 ? true : false}
-                            onSubmitEditing={handleMobileClick}
+                            onSubmitEditing={handleUserEmailMobileClick}
+                            color={validMobile ? "green" : 'red'}
                         />
                     </View>
-                    <View
-                        style={{
-                            flexDirection: "row",
-                            top: 80,
-                            justifyContent: "space-between",
-                        }}
-                    >
-                        <TouchableOpacity
-                            onPress={() => {
-                                setFormStep(1);
-                            }}
-                        >
-                            <AntDesign name="leftcircle" size={60} color="black" />
-                        </TouchableOpacity>
-
-                        {validMobile ? (
-                            <TouchableOpacity onPress={handleMobileClick}>
+                    <View style={styles.formContNext}>
+                        {validUsername && validEmail && validMobile ? (
+                            <TouchableOpacity onPress={handleUserEmailMobileClick}>
                                 <FontAwesome5
                                     name="arrow-circle-right"
                                     size={60}
@@ -423,7 +380,7 @@ export default function Signup(props) {
                 </View>
 
                 {/* register password view */}
-                <View style={{ paddingHorizontal: 40, width: windowsWidth }}>
+                <View style={styles.formCont}>
                     <View>
                         <TextInput
                             color={validPassword ? "green" : "red"}
@@ -433,7 +390,7 @@ export default function Signup(props) {
                             onChangeText={passwordHandleChange}
                             style={{ marginBottom: 6 }}
                             ref={textInput3}
-                            autoFocus={formStep === 3 ? true : false}
+                            autoFocus={formStep === 1 ? true : false}
                             onSubmitEditing={() => textInput4?.current?.focus()}
                         />
                     </View>
@@ -448,13 +405,7 @@ export default function Signup(props) {
                             onSubmitEditing={handlePasswordClick}
                         />
                     </View>
-                    <View
-                        style={{
-                            flexDirection: "row",
-                            top: 80,
-                            justifyContent: "space-between",
-                        }}
-                    >
+                    <View style={[styles.formContNext, { justifyContent: 'space-between' }]}>
                         <TouchableOpacity
                             onPress={() => {
                                 setFormStep(2);
@@ -478,7 +429,7 @@ export default function Signup(props) {
                 </View>
 
                 {/* register OTP view */}
-                <View style={{ paddingHorizontal: 40, width: windowsWidth }}>
+                <View style={styles.formCont}>
                     <View>
                         <TextInput
                             color={validOTP ? "green" : "red"}
@@ -492,10 +443,8 @@ export default function Signup(props) {
                             onSubmitEditing={handleOTPClick}
                         />
                     </View>
-                    {/* <View>
-                        <TextInput color={validRePassword ? 'green' : 'red'} value={rePassword?.password} label="Re-Enter Password" variant="standard" onChangeText={rePasswordHandleChange} />
-                    </View> */}
-                    <View style={{ top: 80, alignItems: "flex-end" }}>
+
+                    <View style={styles.formContNext}>
                         {validOTP ? (
                             <TouchableOpacity onPress={handleOTPClick}>
                                 <FontAwesome5
@@ -507,6 +456,12 @@ export default function Signup(props) {
                         ) : (
                             <Entypo name="circle-with-cross" size={60} color="red" />
                         )}
+                    </View>
+                    <View style={{ top: 120 }}>
+                        <Button key="register_again" color="blue" variant="text" title="Cancel Application" onPress={registerAgainHandler} compact />
+                    </View>
+                    <View style={{ top: 120 }}>
+                        <Button key="register_again" color="blue" variant="text" title="Register Again" onPress={ReRegisterAgainHandler} compact />
                     </View>
                 </View>
             </Animated.View>
@@ -532,5 +487,14 @@ const styles = StyleSheet.create({
         left: 25,
         zIndex: 1,
     },
-
+    formCont: {
+        paddingHorizontal: 40,
+        width: windowsWidth,
+        rowGap: 10
+    },
+    formContNext: {
+        top: 50,
+        flexDirection: 'row',
+        justifyContent: 'flex-end'
+    },
 });

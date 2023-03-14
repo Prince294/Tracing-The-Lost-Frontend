@@ -37,22 +37,27 @@ export default function SideBar(props) {
                     title="Home"
                     leading={<Icon name="home" size={24} />}
                     style={styles.listItem}
+                    onPress={() => { props?.handleBack(); props?.home() }}
                 />
                 <ListItem
                     title="History"
                     leading={<Icon name="history" size={24} />}
                     style={styles.listItem}
+                    onPress={() => { props?.handleBack(); props?.history(); }}
+
                 />
                 <ListItem
                     title="Setting"
                     leading={<Ionicons name="settings" size={22} color="black" />}
                     style={styles.listItem}
+                    onPress={() => { props?.handleBack(); props?.setting() }}
+
                 />
                 <ListItem
                     title="Logout"
                     leading={<AntDesign name="logout" size={22} color="black" />}
                     style={styles.listItem}
-                    onPress={() => props?.logout()}
+                    onPress={() => { props?.handleBack(); props?.logout() }}
                 />
             </View>
             <View style={styles.bottamText}>

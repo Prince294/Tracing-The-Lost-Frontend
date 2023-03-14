@@ -21,8 +21,8 @@ export default function Error(props) {
 const styles = StyleSheet.create({
     errorCont: {
         position: 'absolute',
-        height: height,
         width: width,
+        height: height,
         top: 0,
         left: 0,
         backgroundColor: 'rgba(0,0,0,0.6)',

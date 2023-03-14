@@ -16,9 +16,9 @@ export default function Login(props) {
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState(false)
     const [errMessage, setErrMessage] = useState("")
-    const [password, setPassword] = useState("");
-    const [validData, setValidData] = useState(false)
-    const [usernameEmail, setUsernameEmail] = useState("")
+    const [password, setPassword] = useState("Admin@1234");
+    const [validData, setValidData] = useState(true)
+    const [usernameEmail, setUsernameEmail] = useState("prince1")
 
     useEffect(() => {
         if (props?.focus) {
@@ -101,7 +101,7 @@ export default function Login(props) {
             <View style={[{ flexDirection: 'row' }]}>
                 <View style={{ paddingHorizontal: 40, width: "100%" }}>
                     <View >
-                        <TextInput value={usernameEmail} label="Username/Email" variant="standard" onChangeText={(el) => setUsernameEmail(el)} style={{ marginBottom: 6 }} ref={textInput0} />
+                        <TextInput value={usernameEmail} label="Username/Email" variant="standard" onChangeText={(el) => setUsernameEmail(el)} style={{ marginBottom: 6 }} ref={textInput0} onSubmitEditing={() => textInput1?.current?.focus()} />
                     </View>
                     <View>
                         <TextInput value={password} label="Enter Password" variant="standard" onChangeText={(el) => setPassword(el)} ref={textInput1} onSubmitEditing={handleFormSubmit} />

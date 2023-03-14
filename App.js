@@ -24,7 +24,7 @@ export default function App() {
     console.log(session)
     http.post(apisPath?.user?.checkLogin, { session: session }).then(res => {
       setLoading(false);
-      if (res?.data?.onStep === 4) {
+      if (res?.data?.onStep === 2) {
         setLandingPage(true);
         setOnStep(res?.data?.onStep)
       }
