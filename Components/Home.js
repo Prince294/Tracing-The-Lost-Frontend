@@ -26,7 +26,7 @@ export default function Home(props) {
     const [menuOpen, setMenuOpen] = useState(0);
     const [userData, setUserData] = useState({});
     const [errMessage, setErrMessage] = useState("");
-    const [listOpen, setListOpen] = useState(0);
+    const [listOpen, setListOpen] = useState(2);
 
     useEffect(() => {
         userDetails();
@@ -118,7 +118,7 @@ export default function Home(props) {
             </Animated.View>
 
             <View style={styles.contentSection}>
-                {listOpen === 0 ? <HomeContent data={userData} setting={handleSetting} /> : listOpen === 1 ? <History /> : <Setting />}
+                {listOpen === 0 ? <HomeContent data={userData} setting={handleSetting} /> : listOpen === 1 ? <History /> : <Setting data={userData} />}
             </View>
 
             {loading && (
