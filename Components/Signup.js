@@ -36,11 +36,16 @@ export default function Signup(props) {
     const [error, setError] = useState(false);
     const [errorMessage, setErrorMessage] = useState("Somthing Gonna Happen!")
     const [registerData, setregisterData] = useState({
-        name: "",
         username: "",
         email: "",
         mobile: "",
         password: "",
+    });
+    const [personalData, setPersonalData] = useState({
+        name: "",
+        gender: "",
+        dob: "",
+        profile: ""
     });
 
     const [formStep, setFormStep] = useState(props?.onStep ? props?.onStep : 0);
@@ -236,7 +241,7 @@ export default function Signup(props) {
     }
 
     // handle change all functions
-    const nameHandleChange = (el) => {
+    const usernameHandleChange = (el) => {
         if (el?.length > 2) {
             validateUsername(el);
         } else {
@@ -335,7 +340,7 @@ export default function Signup(props) {
                             value={username?.username}
                             label="Username"
                             variant="standard"
-                            onChangeText={nameHandleChange}
+                            onChangeText={usernameHandleChange}
                             ref={textInput0}
                             onSubmitEditing={() => textInput1?.current?.focus()}
                             color={validUsername ? "green" : 'red'}
@@ -462,6 +467,57 @@ export default function Signup(props) {
                     </View>
                     <View style={{ top: 120 }}>
                         <Button key="register_again" color="blue" variant="text" title="Register Again" onPress={ReRegisterAgainHandler} compact />
+                    </View>
+                </View>
+
+                {/* register name, gender, dob view */}
+                <View style={styles.formCont}>
+                    <View>
+                        <TextInput
+                            value={personalData?.name}
+                            label="Name"
+                            variant="standard"
+                            onChangeText={(el) => setPersonalData((prev) => ({ ...prev, name: el }))}
+                            ref={textInput5}
+                            onSubmitEditing={() => textInput1?.current?.focus()}
+                            color={validUsername ? "green" : 'red'}
+                        />
+                    </View>
+                    <View>
+                        <TextInput
+                            value={personalData?.gender}
+                            label="Gender"
+                            variant="standard"
+                            onChangeText={(el) => setPersonalData((prev) => ({ ...prev, gender: el }))}
+                            // ref={textInput6}
+                            onSubmitEditing={() => textInput2?.current?.focus()}
+                            color={validEmail ? "green" : 'red'}
+                            style={{ color: 'red' }}
+                        />
+                    </View>
+                    <View>
+                        <TextInput
+                            value={personalData?.dob}
+                            label="Date of Birth"
+                            variant="standard"
+                            onChangeText={(el) => setPersonalData((prev) => ({ ...prev, dob: el }))}
+                            // ref={textInput7}
+                            onSubmitEditing={handleUserEmailMobileClick}
+                            color={validMobile ? "green" : 'red'}
+                        />
+                    </View>
+                    <View style={styles.formContNext}>
+                        {validUsername && validEmail && validMobile ? (
+                            <TouchableOpacity onPress={handleUserEmailMobileClick}>
+                                <FontAwesome5
+                                    name="arrow-circle-right"
+                                    size={60}
+                                    color="green"
+                                />
+                            </TouchableOpacity>
+                        ) : (
+                            <Entypo name="circle-with-cross" size={60} color="red" />
+                        )}
                     </View>
                 </View>
             </Animated.View>
