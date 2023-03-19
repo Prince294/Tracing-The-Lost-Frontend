@@ -19,5 +19,8 @@ export const apisPath = {
         userLogin: 'user/login',
         checkLogin: 'user/validate/login',
         userLogout: 'user/logout',
+        userDetailUpdate: 'user/personaldata',
+        getAadhar: 'user/aadhardetail'
     },
+
 }

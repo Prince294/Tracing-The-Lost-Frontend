@@ -21,6 +21,10 @@ import Animated, {
 } from "react-native-reanimated";
 import Loading from "../Shared/Loading.js";
 import Error from "../Shared/Error.js";
+import SelectBox from 'react-native-multi-selectbox'
+import DateTimePicker from '@react-native-community/datetimepicker';
+import * as ImagePicker from 'expo-image-picker';
+import { RadioButton } from 'react-native-paper';
 
 
 const windowsWidth = Dimensions.get('window').width;
@@ -31,6 +35,7 @@ export default function Signup(props) {
     const textInput3 = useRef();
     const textInput4 = useRef();
     const textInput5 = useRef();
+    const textInput6 = useRef();
     const [translate, setTranslate] = useState(-props?.onStep * windowsWidth);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
@@ -44,8 +49,8 @@ export default function Signup(props) {
     const [personalData, setPersonalData] = useState({
         name: "",
         gender: "",
-        dob: "",
-        profile: ""
+        dob: '',
+        profile_image: null
     });
 
     const [formStep, setFormStep] = useState(props?.onStep ? props?.onStep : 0);
@@ -68,23 +73,8 @@ export default function Signup(props) {
     const [rePassword, setRePassword] = useState("");
     const [OTP, setOTP] = useState("");
 
-    useEffect(() => {
-        if (props?.focus) {
-            if (props?.onStep === 4) {
-                setTimeout(() => {
-                    textInput5?.current?.focus();
-                }, 1000);
-            }
-            else {
-                setTimeout(() => {
-                    textInput0.current.focus()
-                }, 1000);
-            }
-        }
-    }, [props?.focus])
 
     useEffect(() => {
-
         const backAction = () => {
             if (formStep !== 0 && props?.onStep !== 4) {
                 setFormStep(formStep - 1);
@@ -114,13 +104,6 @@ export default function Signup(props) {
 
     useEffect(() => {
         setTranslate(-formStep * windowsWidth);
-        (formStep === 0 && props?.focus
-            ? textInput0
-            : formStep === 1
-                ? textInput3
-                : formStep === 2 && props?.focus ?
-                    textInput5 : ""
-        )?.current?.focus();
     }, [formStep]);
 
     // api call functions
@@ -153,7 +136,8 @@ export default function Signup(props) {
             })
             .then((res) => {
                 setLoading(false);
-                props?.currentStep(-1);
+                setFormStep(3);
+                textInput6?.current?.focus();
             })
             .catch((err) => {
                 setLoading(false);
@@ -161,6 +145,36 @@ export default function Signup(props) {
                 setError(true);
             });
     };
+
+    const handlePersonalDetailSubmit = async () => {
+        setLoading(true);
+        let session = await AsyncStorage.getItem("session");
+        var formdata = new FormData();
+        formdata.append('session', session);
+        formdata.append('name', personalData?.name);
+        formdata.append('gender', personalData?.gender);
+        formdata.append('dob', personalData?.dob);
+        formdata.append('profile_image',
+            {
+                uri: personalData?.profile_image,
+                name: 'userProfile.jpg',
+                type: 'image/jpg'
+            });
+        http
+            .post(apisPath?.user?.userDetailUpdate, formdata, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            })
+            .then((res) => {
+                setLoading(false);
+                setFormStep(4);
+            })
+            .catch((err) => {
+                setLoading(false);
+                setErrorMessage(err?.response?.data?.message);
+                setError(true);
+            });
+    };
+
     const validateUsername = (val) => {
         http
             .post(apisPath?.user?.validateUsername, { username: val })
@@ -275,7 +289,7 @@ export default function Signup(props) {
     };
 
     const passwordHandleChange = (el) => {
-        if (/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,24}$/.test(el)) {
+        if (/^(?=.*[0-9])(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,24}$/.test(el)) {
             setvalidPassword(true);
         } else {
             setvalidPassword(false);
@@ -470,55 +484,14 @@ export default function Signup(props) {
                     </View>
                 </View>
 
-                {/* register name, gender, dob view */}
+                {/* register Profile, name, gender, dob view */}
                 <View style={styles.formCont}>
-                    <View>
-                        <TextInput
-                            value={personalData?.name}
-                            label="Name"
-                            variant="standard"
-                            onChangeText={(el) => setPersonalData((prev) => ({ ...prev, name: el }))}
-                            ref={textInput5}
-                            onSubmitEditing={() => textInput1?.current?.focus()}
-                            color={validUsername ? "green" : 'red'}
-                        />
-                    </View>
-                    <View>
-                        <TextInput
-                            value={personalData?.gender}
-                            label="Gender"
-                            variant="standard"
-                            onChangeText={(el) => setPersonalData((prev) => ({ ...prev, gender: el }))}
-                            // ref={textInput6}
-                            onSubmitEditing={() => textInput2?.current?.focus()}
-                            color={validEmail ? "green" : 'red'}
-                            style={{ color: 'red' }}
-                        />
-                    </View>
-                    <View>
-                        <TextInput
-                            value={personalData?.dob}
-                            label="Date of Birth"
-                            variant="standard"
-                            onChangeText={(el) => setPersonalData((prev) => ({ ...prev, dob: el }))}
-                            // ref={textInput7}
-                            onSubmitEditing={handleUserEmailMobileClick}
-                            color={validMobile ? "green" : 'red'}
-                        />
-                    </View>
-                    <View style={styles.formContNext}>
-                        {validUsername && validEmail && validMobile ? (
-                            <TouchableOpacity onPress={handleUserEmailMobileClick}>
-                                <FontAwesome5
-                                    name="arrow-circle-right"
-                                    size={60}
-                                    color="green"
-                                />
-                            </TouchableOpacity>
-                        ) : (
-                            <Entypo name="circle-with-cross" size={60} color="red" />
-                        )}
-                    </View>
+                    <SignupPersonalDetail textInput6={textInput6} personalData={personalData} setPersonalData={setPersonalData} handlePersonalDetailSubmit={handlePersonalDetailSubmit} />
+                </View>
+
+                {/* register aadharcard and verified user view */}
+                <View style={styles.formCont}>
+                    <SignupAadharDetail />
                 </View>
             </Animated.View>
 
@@ -536,6 +509,191 @@ export default function Signup(props) {
     );
 }
 
+
+function SignupPersonalDetail({ textInput6, personalData, setPersonalData, handlePersonalDetailSubmit }) {
+    const [calanderOpen, setCalanderOpen] = useState(false)
+    const genderSelectList = [
+        { id: 'male', item: 'Male' },
+        { id: 'female', item: 'Female' },
+        { id: 'others', item: 'Others' },
+    ]
+    const [gender, setGender] = useState({})
+    const [date, setDate] = useState(new Date())
+    const [selectedImage, setSelectedImage] = useState(null);
+
+    const handleImageUpload = async () => {
+        let result = await ImagePicker.launchImageLibraryAsync({
+            allowsEditing: true,
+            quality: 1,
+        });
+
+        if (!result?.canceled) {
+            setSelectedImage(result?.uri)
+            setPersonalData((prev) => ({ ...prev, profile_image: result?.uri }))
+        }
+    }
+
+    return (
+        <>
+            <View style={{ alignItems: 'center' }} >
+                <TouchableOpacity style={styles.profile} onPress={handleImageUpload}>
+                    <Image source={!selectedImage ? require('../assets/avatar.jpg') : { uri: selectedImage }} style={styles.profile} />
+                </TouchableOpacity>
+            </View>
+
+            <View>
+                <TextInput
+                    value={personalData?.name}
+                    label="Name"
+                    variant="standard"
+                    onChangeText={(el) => setPersonalData((prev) => ({ ...prev, name: el }))}
+                    ref={textInput6}
+                />
+            </View>
+            <View>
+                <SelectBox
+                    label="Select Gender"
+                    options={genderSelectList}
+                    value={gender}
+                    onChange={(el) => { setGender(el); setPersonalData((prev) => ({ ...prev, gender: el?.item })) }}
+                    hideInputFilter={true}
+                />
+            </View>
+            <View>
+                <TextInput editable={false} value={personalData?.dob} label="Date Of Birth" variant="standard" trailing={
+                    <IconButton onPress={() => setCalanderOpen(true)} style={{ right: 10, bottom: 3 }} icon={props => <AntDesign name="calendar" size={26} color="black" {...props} />} />
+                } />
+                {calanderOpen && <DateTimePicker value={date} mode="date" onChange={(dat, date) => { setCalanderOpen(false); setPersonalData((prev) => ({ ...prev, dob: date.toLocaleDateString("en-GB") })); setDate(date); }
+                } />}
+
+            </View>
+            <View style={styles.formContNext}>
+                {personalData?.dob !== '' && personalData?.name?.length > 2 && personalData?.gender !== '' ? (
+                    <TouchableOpacity onPress={handlePersonalDetailSubmit}>
+                        <FontAwesome5
+                            name="arrow-circle-right"
+                            size={60}
+                            color="green"
+                        />
+                    </TouchableOpacity>
+                ) : (
+                    <Entypo name="circle-with-cross" size={60} color="red" />
+                )}
+            </View>
+        </>
+    )
+}
+
+function SignupAadharDetail() {
+    const [validAadhar, setValidAadhar] = useState(false)
+    const [aadharData, setAadharData] = useState({})
+    const [verifiedData, setVerifiedData] = useState({
+        aadhar_number: "",
+        is_verified_user: false
+    });
+    const [selectedImage, setSelectedImage] = useState(null)
+
+    const aadharHandleChange = (el) => {
+        if (el >= 100000000000 && el <= 999999999999) {
+            http
+                .post(apisPath?.user?.getAadhar, {
+                    aadhar_number: el
+                })
+                .then((res) => {
+                    setValidAadhar(true);
+                    setAadharData(res?.data?.data)
+                })
+                .catch((err) => {
+                    setValidAadhar(true)
+                    setAadharData({ found: true })
+
+                });
+        }
+        else {
+            setValidAadhar(false)
+            setAadharData({})
+        }
+        setVerifiedData((prev) => ({ ...prev, aadhar_number: el }))
+    }
+
+    const handleImageUpload = async () => {
+        let result = await ImagePicker.launchImageLibraryAsync({
+            allowsEditing: true,
+            quality: 1,
+        });
+
+        if (!result?.canceled) {
+            setSelectedImage(result?.uri)
+            setPersonalData((prev) => ({ ...prev, profile_image: result?.uri }))
+        }
+    }
+
+    const handleAadharDetailSubmit = async () => {
+
+    }
+
+    return (
+        <>
+            <View>
+                <TextInput
+                    color={validAadhar ? "green" : "red"}
+                    value={verifiedData?.aadhar_number}
+                    label="Enter Aadhar Number"
+                    variant="standard"
+                    onChangeText={aadharHandleChange}
+                    style={{ marginBottom: 6 }}
+                />
+                {!aadharData?.found && validAadhar ? <Text style={{ color: 'green', fontSize: 11, top: -6 }}>{aadharData?.name}, Address: {aadharData?.address?.length > 20 ? aadharData?.address?.substring(0, 20) + "..." : aadharData?.address}</Text>
+                    : validAadhar ?
+                        <Text style={{ color: 'green', fontSize: 11, top: -6 }}>No Data Found</Text> : ""
+                }
+            </View>
+            <View>
+                <Text style={{ marginBottom: 4 }}>Is Verified User?</Text>
+                <View style={[styles.inLineView, { columnGap: 30 }]}>
+                    <View style={styles.inLineView}>
+                        <RadioButton
+                            value={verifiedData?.is_verified_user}
+                            status={verifiedData?.is_verified_user ? 'checked' : 'unchecked'}
+                            onPress={() => setVerifiedData((prev) => ({ ...prev, is_verified_user: true }))}
+                        />
+                        <Text>Yes</Text>
+                    </View>
+                    <View style={styles.inLineView}>
+                        <RadioButton
+                            value={!verifiedData?.is_verified_user}
+                            status={!verifiedData?.is_verified_user ? 'checked' : 'unchecked'}
+                            onPress={() => setVerifiedData((prev) => ({ ...prev, is_verified_user: false }))}
+                        />
+                        <Text>No</Text>
+                    </View>
+                </View>
+            </View>
+            {verifiedData?.is_verified_user &&
+                <View>
+                    <TouchableOpacity style={styles.uploadImage} onPress={handleImageUpload}>
+                        <Image source={!selectedImage ? require('../assets/upload-img.jpg') : { uri: selectedImage }} style={{ width: 70, height: 70 }} />
+                        {!selectedImage && <Text>Upload Document</Text>}
+                    </TouchableOpacity>
+                </View>
+            }
+            <View style={styles.formContNext}>
+                {validAadhar && (!verifiedData?.is_verified_user || (verifiedData?.is_verified_user && selectedImage)) ? (
+                    <TouchableOpacity onPress={handleAadharDetailSubmit}>
+                        <FontAwesome5
+                            name="arrow-circle-right"
+                            size={60}
+                            color="green"
+                        />
+                    </TouchableOpacity>
+                ) : (
+                    <Entypo name="circle-with-cross" size={60} color="red" />
+                )}
+            </View>
+        </>
+    )
+}
+
 const styles = StyleSheet.create({
     backBtn: {
         position: "absolute",
@@ -546,11 +704,30 @@ const styles = StyleSheet.create({
     formCont: {
         paddingHorizontal: 40,
         width: windowsWidth,
-        rowGap: 10
+        rowGap: 10,
     },
     formContNext: {
         top: 50,
         flexDirection: 'row',
         justifyContent: 'flex-end'
     },
+    profile: {
+        width: 100,
+        height: 100,
+        borderRadius: 60
+    },
+    inLineView: {
+        flexDirection: 'row',
+        alignItems: 'center'
+    },
+    uploadImage: {
+        width: '60%',
+        borderStyle: 'dotted',
+        borderWidth: 2,
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingVertical: 4,
+        marginTop: 10
+    }
+
 });
