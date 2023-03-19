@@ -52,6 +52,10 @@ export default function Signup(props) {
         dob: '',
         profile_image: null
     });
+    const [verifiedData, setVerifiedData] = useState({
+        aadhar_number: "",
+        is_verified_user: false
+    });
 
     const [formStep, setFormStep] = useState(props?.onStep ? props?.onStep : 0);
     const [validUsername, setvalidUsername] = useState(false);
@@ -174,6 +178,34 @@ export default function Signup(props) {
                 setError(true);
             });
     };
+
+
+    const handleAadharDetailSubmit = async () => {
+        setLoading(true);
+        let session = await AsyncStorage.getItem("session");
+        var formdata = new FormData();
+        formdata.append('session', session);
+        formdata.append('aadhar_number', verifiedData?.aadhar_number);
+        formdata.append('verified_user_id_proof',
+            {
+                uri: verifiedData?.verified_user_id_proof,
+                name: 'userProfile.jpg',
+                type: 'image/jpg'
+            });
+        http
+            .post(apisPath?.user?.userIDVerification, formdata, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            })
+            .then((res) => {
+                setLoading(false);
+                props?.currentStep(-1);
+            })
+            .catch((err) => {
+                setLoading(false);
+                setErrorMessage(err?.response?.data?.message);
+                setError(true);
+            });
+    }
 
     const validateUsername = (val) => {
         http
@@ -491,7 +523,7 @@ export default function Signup(props) {
 
                 {/* register aadharcard and verified user view */}
                 <View style={styles.formCont}>
-                    <SignupAadharDetail />
+                    <SignupAadharDetail verifiedData={verifiedData} setVerifiedData={setVerifiedData} handleAadharDetailSubmit={handleAadharDetailSubmit} />
                 </View>
             </Animated.View>
 
@@ -559,7 +591,7 @@ function SignupPersonalDetail({ textInput6, personalData, setPersonalData, handl
                     hideInputFilter={true}
                 />
             </View>
-            <View>
+            <View style={{ marginTop: 8 }}>
                 <TextInput editable={false} value={personalData?.dob} label="Date Of Birth" variant="standard" trailing={
                     <IconButton onPress={() => setCalanderOpen(true)} style={{ right: 10, bottom: 3 }} icon={props => <AntDesign name="calendar" size={26} color="black" {...props} />} />
                 } />
@@ -584,13 +616,10 @@ function SignupPersonalDetail({ textInput6, personalData, setPersonalData, handl
     )
 }
 
-function SignupAadharDetail() {
+function SignupAadharDetail({ verifiedData, setVerifiedData, handleAadharDetailSubmit }) {
     const [validAadhar, setValidAadhar] = useState(false)
     const [aadharData, setAadharData] = useState({})
-    const [verifiedData, setVerifiedData] = useState({
-        aadhar_number: "",
-        is_verified_user: false
-    });
+
     const [selectedImage, setSelectedImage] = useState(null)
 
     const aadharHandleChange = (el) => {
@@ -624,13 +653,10 @@ function SignupAadharDetail() {
 
         if (!result?.canceled) {
             setSelectedImage(result?.uri)
-            setPersonalData((prev) => ({ ...prev, profile_image: result?.uri }))
+            setVerifiedData((prev) => ({ ...prev, verified_user_id_proof: result?.uri }))
         }
     }
 
-    const handleAadharDetailSubmit = async () => {
-
-    }
 
     return (
         <>

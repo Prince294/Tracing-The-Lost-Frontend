@@ -20,7 +20,8 @@ export const apisPath = {
         checkLogin: 'user/validate/login',
         userLogout: 'user/logout',
         userDetailUpdate: 'user/personaldata',
-        getAadhar: 'user/aadhardetail'
+        getAadhar: 'user/aadhardetail',
+        userIDVerification: 'user/id_verification'
     },
 
 }

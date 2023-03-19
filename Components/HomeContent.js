@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Alert, Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import { HStack, Banner, Button } from "@react-native-material/core";
+import { Banner, Button } from "@react-native-material/core";
+import * as ImagePicker from 'expo-image-picker';
 
 
 const { height, width } = Dimensions.get('window');
@@ -8,6 +9,7 @@ export default function HomeContent(props) {
     const { data } = props;
     const [traceBtn, setTraceBtn] = useState(false);
     const [progress, setProgress] = useState(0)
+    const [selectedImage, setSelectedImage] = useState(null)
     var interval;
 
 
@@ -32,10 +34,21 @@ export default function HomeContent(props) {
         return () => clearTimeout(interval)
     }, [traceBtn, progress]);
 
+    const handleTrace = async () => {
+        let result = await ImagePicker.launchCameraAsync({
+            allowsEditing: true,
+            quality: 1,
+        });
+
+        if (!result?.canceled) {
+            setSelectedImage(result?.uri)
+        }
+    }
+
 
     return (
         <View style={styles.homeContent}>
-            {!data?.is_verified_user && <Banner
+            {!data?.kyc_status && <Banner
                 text="Please Complete Your KYC."
                 buttons={
                     <Button key="complete-kyc" variant="text" title="Complete KYC" onPress={() => props?.setting()} compact />
@@ -50,7 +63,7 @@ export default function HomeContent(props) {
             </View>
             <View style={styles.btnContainer}>
                 {data?.verified_user && <TouchableOpacity style={styles.btn}><Text>Get Details</Text></TouchableOpacity>}
-                <TouchableOpacity style={styles.btn} onPress={() => setTraceBtn(true)}><Text>Trace The Lost</Text></TouchableOpacity>
+                <TouchableOpacity style={styles.btn} onPress={handleTrace}><Text style={{ fontSize: 16 }}>Trace The Lost</Text></TouchableOpacity>
             </View>
         </View >
     )
@@ -76,12 +89,11 @@ const styles = StyleSheet.create({
     progressCont: {
         justifyContent: 'center',
         alignItems: 'center',
-        // backgroundColor: 'red',
     },
     progressImg: {
         position: 'absolute',
-        width: width - 40,
-        height: height / 2,
+        width: width,
+        height: height / 2 - 10,
         top: -20,
     },
     progressText: {
@@ -99,7 +111,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         columnGap: 20,
         height: height / 3 - 50,
-        // backgroundColor: 'red'
     },
     btn: {
         paddingHorizontal: 40,
