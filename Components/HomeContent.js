@@ -1,15 +1,24 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Alert, Dimensions, Image, PermissionsAndroid, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { Banner, Button } from "@react-native-material/core";
 import * as ImagePicker from 'expo-image-picker';
+import { apisPath } from '../Utils/path';
+import http from './Services/utility';
+import Loading from '../Shared/Loading';
+import Error from '../Shared/Error';
+import * as Location from "expo-location"
 
 
 const { height, width } = Dimensions.get('window');
 export default function HomeContent(props) {
+    const [loading, setLoading] = useState(false)
+    const [error, setError] = useState(false)
     const { data } = props;
     const [traceBtn, setTraceBtn] = useState(false);
-    const [progress, setProgress] = useState(0)
-    const [selectedImage, setSelectedImage] = useState(null)
+    const [progress, setProgress] = useState(0);
+    const [selectedImage, setSelectedImage] = useState(null);
+    const [currentLongitude, setCurrentLongitude] = useState();
+    const [currentLatitude, setCurrentLatitude] = useState();
     var interval;
 
 
@@ -34,16 +43,53 @@ export default function HomeContent(props) {
         return () => clearTimeout(interval)
     }, [traceBtn, progress]);
 
-    const handleTrace = async () => {
-        let result = await ImagePicker.launchCameraAsync({
-            allowsEditing: true,
-            quality: 1,
-        });
+    const HandlePoliceStation = () => {
+        setLoading(true);
+        http.post(apisPath?.user?.findPoliceStations, { 'user_on': [currentLatitude, currentLongitude] }).then(res => {
+            setLoading(false);
+            console.log(res?.data?.data)
+        }
+        ).catch(err => {
+            console.log(err)
+            setLoading(false);
 
-        if (!result?.canceled) {
-            setSelectedImage(result?.uri)
+        })
+    }
+
+
+    const setCurrentLocation = async () => {
+        console.log("in geo location")
+        const foregroundPermission = await Location.requestForegroundPermissionsAsync();
+        if (foregroundPermission.granted) {
+            foregroundSubscrition = Location.watchPositionAsync(
+                {
+                    accuracy: Location.Accuracy.High,
+                    distanceInterval: 10,
+                },
+                location => {
+                    setCurrentLongitude(location?.coords?.longitude);
+                    setCurrentLatitude(location?.coords?.latitude);
+                })
         }
     }
+
+    const handleTrace = async () => {
+        setCurrentLocation();
+        HandlePoliceStation();
+
+        // let result = await ImagePicker.launchCameraAsync({
+        //     allowsEditing: true,
+        //     quality: 1,
+        // });
+
+        // if (!result?.canceled) {
+        //     setSelectedImage(result?.uri);
+        //     setCurrentLocation();
+        //     HandlePoliceStation();
+        // }
+    }
+
+
 
 
     return (
@@ -65,6 +111,12 @@ export default function HomeContent(props) {
                 {data?.verified_user && <TouchableOpacity style={styles.btn}><Text>Get Details</Text></TouchableOpacity>}
                 <TouchableOpacity style={styles.btn} onPress={handleTrace}><Text style={{ fontSize: 16 }}>Trace The Lost</Text></TouchableOpacity>
             </View>
+            {loading && (
+                <Loading />
+            )}
+            {error && (
+                <Error message={errMessage} errorClose={handleErrorButton} />
+            )}
         </View >
     )
 }

@@ -21,7 +21,8 @@ export const apisPath = {
         userLogout: 'user/logout',
         userDetailUpdate: 'user/personaldata',
         getAadhar: 'user/aadhardetail',
-        userIDVerification: 'user/id_verification'
+        userIDVerification: 'user/id_verification',
+        findPoliceStations: 'user/search/police_stations'
     },
 
 }
