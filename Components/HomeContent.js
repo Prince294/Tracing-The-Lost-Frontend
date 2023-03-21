@@ -47,7 +47,7 @@ export default function HomeContent(props) {
     if (traceBtn) {
       interval = setTimeout(() => {
         setProgress((prev) => prev + 1);
-      }, 10);
+      }, 1);
     }
     if (progress >= 100) {
       setTraceBtn(false);
@@ -76,7 +76,7 @@ export default function HomeContent(props) {
       })
       .then((res) => {
         setLoading(false);
-        console.log(res?.data?.data);
+        // console.log(res?.data?.data);
         setPoliceStationData(res?.data?.data);
         for (let i = 0; i < res?.data?.data?.length; i++) {
           setDistances((prev) => [...prev, res?.data?.data[i]?.distance]);
@@ -120,18 +120,6 @@ export default function HomeContent(props) {
       .then((res) => {
         setLoading(false);
         console.log(res?.data?.data);
-        setPoliceStationData(res?.data?.data);
-        for (let i = 0; i < res?.data?.data?.length; i++) {
-          setDistances((prev) => [...prev, res?.data?.data[i]?.distance]);
-        }
-        setMapAnimation(1);
-        setTimeout(() => {
-          ToastAndroid.show(
-            "Select any Pin Point Location",
-            ToastAndroid.LONG,
-            ToastAndroid.BOTTOM
-          );
-        }, 1000);
       })
       .catch((err) => {
         console.log(err);
@@ -161,7 +149,8 @@ export default function HomeContent(props) {
     // setCurrentLocation();
     // HandlePoliceStation();
 
-    let result = await ImagePicker.launchCameraAsync({
+    // let result = await ImagePicker.launchCameraAsync({
+    let result = await ImagePicker.launchImageLibraryAsync({
       allowsEditing: true,
       quality: 1,
     });
