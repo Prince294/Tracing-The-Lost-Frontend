@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, SafeAreaView } from 'react-native';
 import LandingPage from './Components/LandingPage';
 import Home from './Components/Home';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import http from './Components/Services/utility';
 import { apisPath } from './Utils/path';
 import Loading from './Shared/Loading';
+import { NavigationContainer } from '@react-navigation/native';
 
 
 export default function App() {
@@ -19,14 +20,20 @@ export default function App() {
 
 
   const checkSession = async () => {
+    var session;
     setLoading(true);
-    let session = await AsyncStorage.getItem('session');
+    try {
+      session = await AsyncStorage.getItem('session');
+    } catch (e) {
+      setLandingPage(true)
+      setLoading(false);
+    }
     console.log(session)
     http.post(apisPath?.user?.checkLogin, { session: session }).then(res => {
       setLoading(false);
-      if (res?.data?.onStep === 2) {
+      if (res?.data?.on_step >= 2) {
         setLandingPage(true);
-        setOnStep(res?.data?.onStep)
+        setOnStep(res?.data?.on_step)
       }
       else {
         setOnStep(0);
@@ -43,7 +50,7 @@ export default function App() {
   }
 
   return (
-    <View style={styles.container} >
+    <SafeAreaView style={styles.container} >
       {landingPage ?
         <LandingPage landingPageHandler={landingPageHandler} onStep={onStep} />
         :
@@ -52,7 +59,7 @@ export default function App() {
       {loading && (
         <Loading />
       )}
-    </View>
+    </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({

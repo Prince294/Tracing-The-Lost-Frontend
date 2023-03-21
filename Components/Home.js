@@ -26,7 +26,7 @@ export default function Home(props) {
     const [menuOpen, setMenuOpen] = useState(0);
     const [userData, setUserData] = useState({});
     const [errMessage, setErrMessage] = useState("");
-    const [listOpen, setListOpen] = useState(2);
+    const [listOpen, setListOpen] = useState(0);
 
     useEffect(() => {
         userDetails();

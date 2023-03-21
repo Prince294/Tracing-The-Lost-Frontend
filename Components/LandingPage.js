@@ -1,6 +1,6 @@
 import React, { Component, useEffect, useState } from 'react'
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Button, Dimensions, Keyboard } from 'react-native';
+import { StyleSheet, Text, View, Button, Dimensions, Keyboard, SafeAreaView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Animated, { useSharedValue, useAnimatedStyle, interpolate, withTiming } from 'react-native-reanimated';
 import Login from './Login';
@@ -55,7 +55,7 @@ export default function LandingPage(props) {
     }
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
             {isRegister && init ?
                 <Animated.View style={[styles.signup, loginAnimateStyle]}>
                     <Signup onStep={signupStep} mainScreen={revButtonClickHandler} focus={btnContPos === 1 ? true : false} currentStep={currentStepHandler} />
@@ -76,7 +76,7 @@ export default function LandingPage(props) {
                     <Button onPress={() => { setIsRegister(true); buttonClickHandler(); }} title="Signup"></Button>
                 </View>
             </Animated.View>
-        </View>
+        </SafeAreaView>
     );
 }
 const styles = StyleSheet.create({
