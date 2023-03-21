@@ -49,19 +49,16 @@ export default function HomeContent(props) {
       if (mapAnimation === 1) {
         setMapAnimation(0);
       }
+      return true;
     };
-
+    setCurrentLocation();
     const backHandler = BackHandler.addEventListener(
       "hardwareBackPress",
-      backAction
+      () => { backAction() }
     );
 
     return () => backHandler.remove();
   }, []);
-
-  useEffect(() => {
-    setCurrentLocation()
-  }, [])
 
 
   useEffect(() => {
