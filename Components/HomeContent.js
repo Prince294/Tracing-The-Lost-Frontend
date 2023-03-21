@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {
   Alert,
+  BackHandler,
   Dimensions,
   Image,
   PermissionsAndroid,
@@ -42,6 +43,26 @@ export default function HomeContent(props) {
   const [selectedPoliceStation, setSelectedPoliceStation] = useState();
   const [policeStationData, setPoliceStationData] = useState([]);
   var interval;
+
+  useEffect(() => {
+    const backAction = () => {
+      if (mapAnimation === 1) {
+        setMapAnimation(0);
+      }
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    return () => backHandler.remove();
+  }, []);
+
+  useEffect(() => {
+    setCurrentLocation()
+  }, [])
+
 
   useEffect(() => {
     if (traceBtn) {
@@ -131,7 +152,7 @@ export default function HomeContent(props) {
     const foregroundPermission =
       await Location.requestForegroundPermissionsAsync();
     if (foregroundPermission?.granted) {
-      foregroundSubscrition = Location.watchPositionAsync(
+      foregroundSubscrition = await Location.watchPositionAsync(
         {
           accuracy: Location.Accuracy.High,
           distanceInterval: 10,
@@ -146,11 +167,9 @@ export default function HomeContent(props) {
   };
 
   const handleTrace = async () => {
-    // setCurrentLocation();
-    // HandlePoliceStation();
 
-    // let result = await ImagePicker.launchCameraAsync({
-    let result = await ImagePicker.launchImageLibraryAsync({
+    let result = await ImagePicker.launchCameraAsync({
+      // let result = await ImagePicker.launchImageLibraryAsync({
       allowsEditing: true,
       quality: 1,
     });
