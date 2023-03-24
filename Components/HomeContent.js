@@ -365,14 +365,19 @@ export default function HomeContent(props) {
 var pi = Math.PI;
 
 let hyp1 = Math.sqrt(
-  Math.pow(width / 2 - 25 - width / 10, 2) +
-    Math.pow((15 * height) / 100 - 30, 2)
+  Math.pow(width / 2 - width / 10 - 65, 2) +
+    Math.pow((15 * height) / 100 - 50, 2)
 );
-let line1Ang = Math.acos((15 * height) / 100 / hyp1);
+let width1 =
+  width / 2 - width / 10 - 65 > (15 * height) / 100 - 50
+    ? (15 * height) / 100 - 50
+    : width / 2 - width / 10 - 65;
+
+let line1Ang = Math.acos(width1 / hyp1);
 line1Ang = 360 - line1Ang * (180 / pi);
 
 let hyp2 = Math.sqrt(
-  Math.pow(width / 2 - 25 - width / 10, 2) +
+  Math.pow(width / 2 + 25 - width / 10, 2) +
     Math.pow((25 * height) / 100 - 30, 2)
 );
 let line2Ang = Math.acos((width / 2 - 25 - width / 10) / hyp2);
@@ -505,8 +510,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   line1: {
-    width: hyp1 - 30,
-    top: (17.5 * height) / 100 + 28,
+    width: hyp1,
+    top: (17.5 * height) / 100 + 25,
     left: (width / 2 - 25 - width / 10) / 2 + 2,
     transform: [{ rotate: line1Ang + "deg" }],
   },
