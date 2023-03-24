@@ -45,6 +45,8 @@ export default function HomeContent(props) {
   const [policeStationData, setPoliceStationData] = useState([]);
   const [traceMsg, setTraceMsg] = useState("");
   const [traceTitle, setTraceTitle] = useState("");
+  const [progressTime, setProgressTime] = useState(50);
+  const [progressDropStep, setProgressDropStep] = useState(1);
   var interval;
 
   useEffect(() => {
@@ -68,8 +70,8 @@ export default function HomeContent(props) {
   useEffect(() => {
     if (traceBtn) {
       interval = setTimeout(() => {
-        setProgress((prev) => prev + 1);
-      }, 1);
+        setProgress((prev) => prev + progressDropStep);
+      }, progressTime);
     }
     if (progress >= 100) {
       setTraceBtn(false);
@@ -86,16 +88,27 @@ export default function HomeContent(props) {
     return () => clearTimeout(interval);
   }, [traceBtn, progress]);
 
-  const HandlePoliceStation = () => {
+  const HandlePoliceStation = async () => {
     setLoading(true);
-    http
+    await http
       .post(apisPath?.user?.findPoliceStations, {
         user_on: [currentLongitude, currentLatitude],
       })
       .then((res) => {
-        setLoading(false);
         // console.log(res?.data?.data);
-        setPoliceStationData(res?.data?.data);
+        var data = res?.data?.data;
+        data.sort((a, b) => {
+          const nameA = a?.distance?.toUpperCase();
+          const nameB = b?.distance?.toUpperCase();
+          if (nameA > nameB) {
+            return 1;
+          }
+          if (nameA < nameB) {
+            return -1;
+          }
+          return 0;
+        });
+        setPoliceStationData(data);
         for (let i = 0; i < res?.data?.data?.length; i++) {
           setDistances((prev) => [...prev, res?.data?.data[i]?.distance]);
         }
@@ -107,9 +120,12 @@ export default function HomeContent(props) {
             ToastAndroid.BOTTOM
           );
         }, 1000);
+        setLoading(false);
+        setProgressTime(1);
+        setProgressDropStep(10);
       })
       .catch((err) => {
-        console.log(err);
+        console.log("police error", err);
         setLoading(false);
       });
   };
@@ -172,6 +188,7 @@ export default function HomeContent(props) {
           setCurrentLatitude(location?.coords?.latitude);
         }
       );
+      HandlePoliceStation();
     }
   };
 
@@ -181,11 +198,9 @@ export default function HomeContent(props) {
       allowsEditing: true,
       quality: 1,
     });
-
     if (!result?.canceled) {
-      setSelectedImage(result?.uri);
+      setSelectedImage(result?.assets[0]?.uri);
       setCurrentLocation();
-      HandlePoliceStation();
     }
   };
 
@@ -275,6 +290,9 @@ export default function HomeContent(props) {
             source={require("../assets/location_pin.png")}
             style={{ width: "100%", height: "100%" }}
           />
+          <Text numberOfLines={1} style={styles.addressText}>
+            {policeStationData[0]?.address}
+          </Text>
         </TouchableOpacity>
         <View style={[styles.line, styles.line1]}>
           <Text style={styles.distance}>{distances[0]}</Text>
@@ -291,6 +309,9 @@ export default function HomeContent(props) {
             source={require("../assets/location_pin.png")}
             style={{ width: "100%", height: "100%" }}
           />
+          <Text numberOfLines={1} style={styles.addressText}>
+            {policeStationData[3]?.address}
+          </Text>
         </TouchableOpacity>
         <View style={[styles.line, styles.line3]}>
           <Text style={styles.distance}>{distances[3]}</Text>
@@ -309,6 +330,9 @@ export default function HomeContent(props) {
             style={{ width: "100%", height: "100%" }}
             onPress={() => setMapAnimation(0)}
           />
+          <Text numberOfLines={1} style={styles.addressText}>
+            {policeStationData[4]?.address}
+          </Text>
         </TouchableOpacity>
         <View style={[styles.line, styles.line4]}>
           <Text style={styles.distance}>{distances[4]}</Text>
@@ -326,6 +350,9 @@ export default function HomeContent(props) {
             onPress={() => setMapAnimation(0)}
             style={{ width: "100%", height: "100%" }}
           />
+          <Text numberOfLines={1} style={styles.addressText}>
+            {policeStationData[2]?.address}
+          </Text>
         </TouchableOpacity>
         <View style={[styles.line, styles.line2]}>
           <Text style={styles.distance}>{distances[2]}</Text>
@@ -440,6 +467,9 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "900",
     letterSpacing: 1.2,
+  },
+  addressText: {
+    color: "white",
   },
   map: {
     width: width,

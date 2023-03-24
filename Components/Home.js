@@ -135,7 +135,7 @@ export default function Home(props) {
         ) : listOpen === 1 ? (
           <History />
         ) : (
-          <Setting data={userData} />
+          <Setting data={userData} handleUserDetails={userDetails} />
         )}
       </View>
 

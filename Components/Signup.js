@@ -595,8 +595,11 @@ function SignupPersonalDetail({
     });
 
     if (!result?.canceled) {
-      setSelectedImage(result?.uri);
-      setPersonalData((prev) => ({ ...prev, profile_image: result?.uri }));
+      setSelectedImage(result?.assets[0]?.uri);
+      setPersonalData((prev) => ({
+        ...prev,
+        profile_image: result?.assets[0]?.uri,
+      }));
     }
   };
 
@@ -722,10 +725,10 @@ function SignupAadharDetail({
     });
 
     if (!result?.canceled) {
-      setSelectedImage(result?.uri);
+      setSelectedImage(result?.assets[0]?.uri);
       setVerifiedData((prev) => ({
         ...prev,
-        verified_user_id_proof: result?.uri,
+        verified_user_id_proof: result?.assets[0]?.uri,
       }));
     }
   };
