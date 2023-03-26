@@ -38,7 +38,7 @@ export default function History() {
     http
       .post(apisPath?.user?.history, { session: session })
       .then((res) => {
-        console.log(res?.data?.data);
+        // console.log(res?.data?.data);
         setData(res?.data?.data);
         setLoading(false);
       })

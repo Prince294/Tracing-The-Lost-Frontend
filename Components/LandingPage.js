@@ -90,11 +90,11 @@ const styles = StyleSheet.create({
     },
     login: {
         position: 'absolute',
-        width: width,
         height: height,
         justifyContent: 'center',
         alignItems: 'center',
-        top: -height
+        top: -height,
+        width: width
     },
     signup: {
         position: 'absolute',

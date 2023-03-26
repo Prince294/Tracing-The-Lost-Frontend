@@ -31,7 +31,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import * as ImagePicker from "expo-image-picker";
 import { RadioButton } from "react-native-paper";
 
-const windowsWidth = Dimensions.get("window").width;
+const { height, width } = Dimensions.get('window');
 export default function Signup(props) {
   const textInput0 = useRef();
   const textInput1 = useRef();
@@ -40,7 +40,7 @@ export default function Signup(props) {
   const textInput4 = useRef();
   const textInput5 = useRef();
   const textInput6 = useRef();
-  const [translate, setTranslate] = useState(-props?.onStep * windowsWidth);
+  const [translate, setTranslate] = useState(-props?.onStep * width);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("Somthing Gonna Happen!");
@@ -110,7 +110,7 @@ export default function Signup(props) {
   }, []);
 
   useEffect(() => {
-    setTranslate(-formStep * windowsWidth);
+    setTranslate(-formStep * width);
   }, [formStep]);
 
   // api call functions
@@ -161,11 +161,13 @@ export default function Signup(props) {
     formdata.append("name", personalData?.name);
     formdata.append("gender", personalData?.gender);
     formdata.append("dob", personalData?.dob);
-    formdata.append("profile_image", {
-      uri: personalData?.profile_image,
-      name: "userProfile.jpg",
-      type: "image/jpg",
-    });
+    if (personalData?.profile_image) {
+      formdata.append("profile_image", {
+        uri: personalData?.profile_image,
+        name: "userProfile.jpg",
+        type: "image/jpg",
+      });
+    }
     http
       .post(apisPath?.user?.userDetailUpdate, formdata, {
         headers: { "Content-Type": "multipart/form-data" },
@@ -175,6 +177,7 @@ export default function Signup(props) {
         setFormStep(4);
       })
       .catch((err) => {
+        console.log(err)
         setLoading(false);
         setErrorMessage(err?.response?.data?.message);
         setError(true);
@@ -390,6 +393,7 @@ export default function Signup(props) {
       </View>
       <View style={{ height: 310 }}>
         <Image source={require("../assets/wave-1.png")} />
+        <View style={{ position: 'absolute', width: width, alignItems: 'center', bottom: 16 }}><Text style={{ fontSize: 24, color: '#7149C6' }}>Signup</Text></View>
       </View>
 
       <Animated.View style={[{ flexDirection: "row" }, animatedStyle]}>
@@ -674,8 +678,8 @@ function SignupPersonalDetail({
       </View>
       <View style={styles.formContNext}>
         {personalData?.dob !== "" &&
-        personalData?.name?.length > 2 &&
-        personalData?.gender !== "" ? (
+          personalData?.name?.length > 2 &&
+          personalData?.gender !== "" ? (
           <TouchableOpacity onPress={handlePersonalDetailSubmit}>
             <FontAwesome5 name="arrow-circle-right" size={60} color="green" />
           </TouchableOpacity>
@@ -807,8 +811,8 @@ function SignupAadharDetail({
       )}
       <View style={styles.formContNext}>
         {validAadhar &&
-        (!verifiedData?.is_verified_user ||
-          (verifiedData?.is_verified_user && selectedImage)) ? (
+          (!verifiedData?.is_verified_user ||
+            (verifiedData?.is_verified_user && selectedImage)) ? (
           <TouchableOpacity onPress={handleAadharDetailSubmit}>
             <FontAwesome5 name="arrow-circle-right" size={60} color="green" />
           </TouchableOpacity>
@@ -829,7 +833,7 @@ const styles = StyleSheet.create({
   },
   formCont: {
     paddingHorizontal: 40,
-    width: windowsWidth,
+    width: width,
     rowGap: 10,
   },
   formContNext: {

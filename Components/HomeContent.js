@@ -45,7 +45,7 @@ export default function HomeContent(props) {
   const [policeStationData, setPoliceStationData] = useState([]);
   const [traceMsg, setTraceMsg] = useState("");
   const [traceTitle, setTraceTitle] = useState("");
-  const [progressTime, setProgressTime] = useState(50);
+  const [progressTime, setProgressTime] = useState(1);
   const [progressDropStep, setProgressDropStep] = useState(1);
   var interval;
 
@@ -70,8 +70,8 @@ export default function HomeContent(props) {
   useEffect(() => {
     if (traceBtn) {
       interval = setTimeout(() => {
-        setProgress((prev) => prev + progressDropStep);
-      }, progressTime);
+        setProgress((prev) => prev + 1);
+      }, 100);
     }
     if (progress >= 100) {
       setTraceBtn(false);
@@ -92,7 +92,7 @@ export default function HomeContent(props) {
     setLoading(true);
     await http
       .post(apisPath?.user?.findPoliceStations, {
-        user_on: [currentLongitude, currentLatitude],
+        user_on: [currentLatitude, currentLongitude],
       })
       .then((res) => {
         // console.log(res?.data?.data);
@@ -109,8 +109,8 @@ export default function HomeContent(props) {
           return 0;
         });
         setPoliceStationData(data);
-        for (let i = 0; i < res?.data?.data?.length; i++) {
-          setDistances((prev) => [...prev, res?.data?.data[i]?.distance]);
+        for (let i = 0; i < data?.length; i++) {
+          setDistances((prev) => [...prev, data[i]?.distance]);
         }
         setMapAnimation(1);
         setTimeout(() => {
@@ -157,6 +157,7 @@ export default function HomeContent(props) {
         setTraceMsg(
           "Suspect details are send to your police station, Thanks for helping"
         );
+        setMapAnimation(0)
       })
       .catch((err) => {
         console.log(err?.response?.data?.message);
@@ -164,16 +165,18 @@ export default function HomeContent(props) {
         setTraceMsg(
           "We are working on it, Please be patience, We'll notify you Once we found the Details."
         );
+        setMapAnimation(0)
         if (err?.response?.data?.message !== "Data Not Found") {
           setTraceBtn(false);
           setProgress(0);
           setErrMsg(err?.response?.data?.message);
           setError(true);
+
         }
       });
   };
 
-  const setCurrentLocation = async () => {
+  const setCurrentLocation = async (type = false) => {
     const foregroundPermission =
       await Location.requestForegroundPermissionsAsync();
     if (foregroundPermission?.granted) {
@@ -183,24 +186,25 @@ export default function HomeContent(props) {
           distanceInterval: 10,
         },
         (location) => {
-          //   console.log(location);
-          setCurrentLongitude(location?.coords?.longitude);
           setCurrentLatitude(location?.coords?.latitude);
+          setCurrentLongitude(location?.coords?.longitude);
         }
       );
-      HandlePoliceStation();
+      if (type) {
+        HandlePoliceStation();
+      }
     }
   };
 
   const handleTrace = async () => {
-    // let result = await ImagePicker.launchCameraAsync({
     let result = await ImagePicker.launchImageLibraryAsync({
+      // let result = await ImagePicker.launchCameraAsync({
       allowsEditing: true,
       quality: 1,
     });
     if (!result?.canceled) {
       setSelectedImage(result?.assets[0]?.uri);
-      setCurrentLocation();
+      setCurrentLocation(true);
     }
   };
 
@@ -366,28 +370,28 @@ var pi = Math.PI;
 
 let hyp1 = Math.sqrt(
   Math.pow(width / 2 - 25 - width / 10, 2) +
-    Math.pow((15 * height) / 100 - 30, 2)
+  Math.pow((15 * height) / 100 - 30, 2)
 );
 let line1Ang = Math.acos((15 * height) / 100 / hyp1);
 line1Ang = 360 - line1Ang * (180 / pi);
 
 let hyp2 = Math.sqrt(
   Math.pow(width / 2 - 25 - width / 10, 2) +
-    Math.pow((25 * height) / 100 - 30, 2)
+  Math.pow((25 * height) / 100 - 30, 2)
 );
 let line2Ang = Math.acos((width / 2 - 25 - width / 10) / hyp2);
 line2Ang = line2Ang * (180 / pi);
 
 let hyp3 = Math.sqrt(
   Math.pow(width / 2 - 25 - width / 5, 2) +
-    Math.pow((40 * height) / 100 - 30, 2)
+  Math.pow((40 * height) / 100 - 30, 2)
 );
 let line3Ang = Math.acos((width / 2 - 25 - width / 5) / hyp3);
 line3Ang = 360 - line3Ang * (180 / pi);
 
 let hyp4 = Math.sqrt(
   Math.pow(width / 2 - 25 - (30 * width) / 100, 2) +
-    Math.pow((55 * height) / 100 - 30, 2)
+  Math.pow((55 * height) / 100 - 30, 2)
 );
 let line4Ang = Math.acos((width / 2 - 25 - (30 * width) / 100) / hyp4);
 line4Ang = line4Ang * (180 / pi);
