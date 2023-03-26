@@ -24,5 +24,6 @@ export const apisPath = {
     userIDVerification: "user/id_verification",
     findPoliceStations: "user/search/police_stations",
     tracingTheLost: "user/face/recognize",
+    history: "user/history",
   },
 };

@@ -17,17 +17,9 @@ export default function Login(props) {
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState(false)
     const [errMessage, setErrMessage] = useState("")
-    const [usernameEmail, setUsernameEmail] = useState("prince");
-    const [password, setPassword] = useState("Admin@1234");
+    const [usernameEmail, setUsernameEmail] = useState("");
+    const [password, setPassword] = useState("");
     const [validData, setValidData] = useState(true)
-
-    useEffect(() => {
-        if (props?.focus) {
-            setTimeout(() => {
-                textInput0.current.focus()
-            }, 1000);
-        }
-    }, [props?.focus])
 
 
     useEffect(() => {
@@ -100,7 +92,7 @@ export default function Login(props) {
                 </View>
 
                 <View style={[{ flexDirection: 'row' }]}>
-                    <View style={{ paddingHorizontal: 40, width: "100%" }}>
+                    <View style={{ paddingHorizontal: 60, width: "100%" }}>
                         <View >
                             <TextInput value={usernameEmail} label="Username/Email" variant="standard" onChangeText={(el) => setUsernameEmail(el)} style={{ marginBottom: 6 }} ref={textInput0} onSubmitEditing={() => textInput1?.current?.focus()} />
                         </View>
@@ -140,8 +132,8 @@ export default function Login(props) {
 const styles = StyleSheet.create({
     backBtn: {
         position: 'absolute',
-        top: 32,
-        left: 25,
+        top: 43,
+        left: 50,
         zIndex: 1
     }
 });
