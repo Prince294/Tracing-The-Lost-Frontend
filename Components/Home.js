@@ -113,8 +113,8 @@ export default function Home(props) {
           {listOpen === 0
             ? "Tracing The Lost"
             : listOpen === 1
-            ? "History"
-            : "Setting"}
+              ? "History"
+              : "Setting"}
         </Text>
       </Animated.View>
 
@@ -149,7 +149,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    paddingTop: 30,
   },
   menuContainer: {
     position: "absolute",

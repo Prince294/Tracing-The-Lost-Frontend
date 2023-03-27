@@ -26,7 +26,7 @@ export default function LandingPage(props) {
     })
 
     const loginAnimateStyle = useAnimatedStyle(() => {
-        const interpolation = interpolate(btnContPos, [0, 1], [0, height + 30]);
+        const interpolation = interpolate(btnContPos, [0, 1], [0, height]);
         return {
             transform: [{ translateY: withTiming(interpolation, { duration: 1000 }) }]
         }
