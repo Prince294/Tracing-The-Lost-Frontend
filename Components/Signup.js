@@ -30,8 +30,9 @@ import SelectBox from "react-native-multi-selectbox";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import * as ImagePicker from "expo-image-picker";
 import { RadioButton } from "react-native-paper";
+import { ImageBackground } from "react-native";
 
-const { height, width } = Dimensions.get('window');
+const { height, width } = Dimensions.get("window");
 export default function Signup(props) {
   const textInput0 = useRef();
   const textInput1 = useRef();
@@ -177,7 +178,7 @@ export default function Signup(props) {
         setFormStep(4);
       })
       .catch((err) => {
-        console.log(err)
+        console.log(err);
         setLoading(false);
         setErrorMessage(err?.response?.data?.message);
         setError(true);
@@ -381,22 +382,37 @@ export default function Signup(props) {
   });
 
   return (
-    <Stack spacing={2} style={{ flex: 1, flexDirection: "column" }}>
-      <View style={styles.backBtn}>
-        <TouchableOpacity
-          onPress={() => {
-            props?.mainScreen();
-          }}
-        >
-          <AntDesign name="leftcircle" size={36} color="white" />
-        </TouchableOpacity>
-      </View>
-      <View style={{ height: 310 }}>
-        <Image source={require("../assets/wave-1.png")} />
-        <View style={{ position: 'absolute', width: width, alignItems: 'center', bottom: 16 }}><Text style={{ fontSize: 24, color: '#7149C6' }}>Signup</Text></View>
+    <Stack spacing={0} style={{ flex: 1, flexDirection: "column" }}>
+      <View style={styles.header}>
+        <ImageBackground
+          source={require("../assets/wave-3.jpg")}
+          resizeMode="cover"
+          style={{ flex: 1 }}
+        ></ImageBackground>
+        <View style={styles.backBtn}>
+          <TouchableOpacity
+            onPress={() => {
+              props?.mainScreen();
+            }}
+          >
+            <AntDesign name="leftcircle" size={32} color="#000" />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.heading}>
+          <Text style={styles.headingText}>Create{"\n"}Account</Text>
+        </View>
       </View>
 
-      <Animated.View style={[{ flexDirection: "row" }, animatedStyle]}>
+      <Animated.View
+        style={[
+          {
+            flex: 1,
+            flexDirection: "row",
+            backgroundColor: "#edf9fc",
+          },
+          animatedStyle,
+        ]}
+      >
         {/* register username, email, and mobile view  */}
         <View style={styles.formCont}>
           <View>
@@ -678,8 +694,8 @@ function SignupPersonalDetail({
       </View>
       <View style={styles.formContNext}>
         {personalData?.dob !== "" &&
-          personalData?.name?.length > 2 &&
-          personalData?.gender !== "" ? (
+        personalData?.name?.length > 2 &&
+        personalData?.gender !== "" ? (
           <TouchableOpacity onPress={handlePersonalDetailSubmit}>
             <FontAwesome5 name="arrow-circle-right" size={60} color="green" />
           </TouchableOpacity>
@@ -811,8 +827,8 @@ function SignupAadharDetail({
       )}
       <View style={styles.formContNext}>
         {validAadhar &&
-          (!verifiedData?.is_verified_user ||
-            (verifiedData?.is_verified_user && selectedImage)) ? (
+        (!verifiedData?.is_verified_user ||
+          (verifiedData?.is_verified_user && selectedImage)) ? (
           <TouchableOpacity onPress={handleAadharDetailSubmit}>
             <FontAwesome5 name="arrow-circle-right" size={60} color="green" />
           </TouchableOpacity>
@@ -825,11 +841,29 @@ function SignupAadharDetail({
 }
 
 const styles = StyleSheet.create({
+  header: {
+    width: width,
+    height: height / 3,
+    paddingTop: 25,
+    backgroundColor: "#fff",
+  },
   backBtn: {
     position: "absolute",
-    top: 32,
-    left: 25,
     zIndex: 1,
+    marginLeft: 20,
+    marginTop: 40,
+  },
+  heading: {
+    position: "absolute",
+    backgroundColor: "transparent",
+    width: width,
+    height: "50%",
+    bottom: 0,
+  },
+  headingText: {
+    fontSize: 30,
+    color: "#049bc4",
+    paddingLeft: 24,
   },
   formCont: {
     paddingHorizontal: 40,
