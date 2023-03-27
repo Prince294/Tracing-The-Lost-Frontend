@@ -157,7 +157,7 @@ export default function HomeContent(props) {
         setTraceMsg(
           "Suspect details are send to your police station, Thanks for helping"
         );
-        setMapAnimation(0)
+        setMapAnimation(0);
       })
       .catch((err) => {
         console.log(err?.response?.data?.message);
@@ -165,13 +165,12 @@ export default function HomeContent(props) {
         setTraceMsg(
           "We are working on it, Please be patience, We'll notify you Once we found the Details."
         );
-        setMapAnimation(0)
+        setMapAnimation(0);
         if (err?.response?.data?.message !== "Data Not Found") {
           setTraceBtn(false);
           setProgress(0);
           setErrMsg(err?.response?.data?.message);
           setError(true);
-
         }
       });
   };
@@ -370,28 +369,33 @@ var pi = Math.PI;
 
 let hyp1 = Math.sqrt(
   Math.pow(width / 2 - 25 - width / 10, 2) +
-  Math.pow((15 * height) / 100 - 30, 2)
+    Math.pow((15 * height) / 100 - 30, 2)
 );
-let line1Ang = Math.acos((15 * height) / 100 / hyp1);
+let width1 =
+  width / 2 - width / 10 - 65 > (15 * height) / 100 - 50
+    ? (15 * height) / 100 - 50
+    : width / 2 - width / 10 - 65;
+
+let line1Ang = Math.acos(width1 / hyp1);
 line1Ang = 360 - line1Ang * (180 / pi);
 
 let hyp2 = Math.sqrt(
   Math.pow(width / 2 - 25 - width / 10, 2) +
-  Math.pow((25 * height) / 100 - 30, 2)
+    Math.pow((25 * height) / 100 - 30, 2)
 );
 let line2Ang = Math.acos((width / 2 - 25 - width / 10) / hyp2);
 line2Ang = line2Ang * (180 / pi);
 
 let hyp3 = Math.sqrt(
   Math.pow(width / 2 - 25 - width / 5, 2) +
-  Math.pow((40 * height) / 100 - 30, 2)
+    Math.pow((40 * height) / 100 - 30, 2)
 );
 let line3Ang = Math.acos((width / 2 - 25 - width / 5) / hyp3);
 line3Ang = 360 - line3Ang * (180 / pi);
 
 let hyp4 = Math.sqrt(
   Math.pow(width / 2 - 25 - (30 * width) / 100, 2) +
-  Math.pow((55 * height) / 100 - 30, 2)
+    Math.pow((55 * height) / 100 - 30, 2)
 );
 let line4Ang = Math.acos((width / 2 - 25 - (30 * width) / 100) / hyp4);
 line4Ang = line4Ang * (180 / pi);
@@ -509,8 +513,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   line1: {
-    width: hyp1 - 30,
-    top: (17.5 * height) / 100 + 28,
+    width: hyp1,
+    top: (17.5 * height) / 100 + 25,
     left: (width / 2 - 25 - width / 10) / 2 + 2,
     transform: [{ rotate: line1Ang + "deg" }],
   },

@@ -29,9 +29,14 @@
     },
     "extra": {
       "eas": {
-        "projectId": "97cebd99-4c9e-494a-b63c-6a877f509a20"
+        "projectId": "fb8e306b-483a-4eca-9064-70ef28e49396"
       }
     },
-    "owner": "reflex1408"
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/fb8e306b-483a-4eca-9064-70ef28e49396"
+    }
   }
 }
