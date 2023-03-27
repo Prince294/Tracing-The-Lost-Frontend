@@ -144,9 +144,10 @@ const styles = StyleSheet.create({
   buttonCont: {
     position: "absolute",
     padding: 80,
-    rowGap: 40,
+    rowGap: 30,
     width: width,
     height: height / 3,
+    bottom: 0,
   },
   btn: {
     textAlign: "center",

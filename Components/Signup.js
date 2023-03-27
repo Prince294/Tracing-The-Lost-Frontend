@@ -67,7 +67,10 @@ export default function Signup(props) {
   const [validEmail, setvalidEmail] = useState(false);
   const [validMobile, setvalidMobile] = useState(false);
   const [validPassword, setvalidPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(true);
   const [validRePassword, setvalidRePassword] = useState(false);
+  const [showRePassword, setShowRePassword] = useState(true);
+
   const [validOTP, setvalidOTP] = useState(false);
   const [username, setUsername] = useState({
     username: "",
@@ -409,6 +412,7 @@ export default function Signup(props) {
             flex: 1,
             flexDirection: "row",
             backgroundColor: "#edf9fc",
+            paddingTop: 20,
           },
           animatedStyle,
         ]}
@@ -468,26 +472,67 @@ export default function Signup(props) {
         <View style={styles.formCont}>
           <View>
             <TextInput
-              color={validPassword ? "green" : "red"}
               value={password}
-              label="Password"
+              color={validPassword ? "green" : "red"}
+              label="Enter Password"
               variant="standard"
               onChangeText={passwordHandleChange}
-              style={{ marginBottom: 6 }}
               ref={textInput3}
               autoFocus={formStep === 1 ? true : false}
               onSubmitEditing={() => textInput4?.current?.focus()}
+              secureTextEntry={showPassword}
+              autoCorrect={false}
+              trailing={
+                <IconButton
+                  onPress={() => setShowPassword((el) => !el)}
+                  style={{ right: 10, bottom: 3 }}
+                  icon={(props) =>
+                    showPassword ? (
+                      <Entypo name="eye" size={24} color="black" {...props} />
+                    ) : (
+                      <Entypo
+                        name="eye-with-line"
+                        size={24}
+                        color="black"
+                        {...props}
+                      />
+                    )
+                  }
+                />
+              }
             />
           </View>
           <View>
+            <TextInput />
+
             <TextInput
-              color={validRePassword ? "green" : "red"}
               value={rePassword}
+              color={validRePassword ? "green" : "red"}
               label="Re-Enter Password"
               variant="standard"
               onChangeText={rePasswordHandleChange}
               ref={textInput4}
               onSubmitEditing={handlePasswordClick}
+              secureTextEntry={showRePassword}
+              autoCorrect={false}
+              trailing={
+                <IconButton
+                  onPress={() => setReShowPassword((el) => !el)}
+                  style={{ right: 10, bottom: 3 }}
+                  icon={(props) =>
+                    showRePassword ? (
+                      <Entypo name="eye" size={24} color="black" {...props} />
+                    ) : (
+                      <Entypo
+                        name="eye-with-line"
+                        size={24}
+                        color="black"
+                        {...props}
+                      />
+                    )
+                  }
+                />
+              }
             />
           </View>
           <View

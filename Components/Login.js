@@ -33,6 +33,7 @@ export default function Login(props) {
   const [usernameEmail, setUsernameEmail] = useState("");
   const [password, setPassword] = useState("");
   const [validData, setValidData] = useState(true);
+  const [showPassword, setShowPassword] = useState(true);
 
   useEffect(() => {
     const backAction = () => {
@@ -136,6 +137,7 @@ export default function Login(props) {
               flex: 1,
               flexDirection: "row",
               backgroundColor: "#edf9fc",
+              paddingTop: 20,
             },
           ]}
         >
@@ -146,7 +148,7 @@ export default function Login(props) {
                 label="Username/Email"
                 variant="standard"
                 onChangeText={(el) => setUsernameEmail(el)}
-                style={{ marginBottom: 6 }}
+                style={{ marginBottom: 16 }}
                 ref={textInput0}
                 onSubmitEditing={() => textInput1?.current?.focus()}
               />
@@ -159,6 +161,26 @@ export default function Login(props) {
                 onChangeText={(el) => setPassword(el)}
                 ref={textInput1}
                 onSubmitEditing={handleFormSubmit}
+                secureTextEntry={showPassword}
+                autoCorrect={false}
+                trailing={
+                  <IconButton
+                    onPress={() => setShowPassword((el) => !el)}
+                    style={{ right: 10, bottom: 3 }}
+                    icon={(props) =>
+                      showPassword ? (
+                        <Entypo name="eye" size={24} color="black" {...props} />
+                      ) : (
+                        <Entypo
+                          name="eye-with-line"
+                          size={24}
+                          color="black"
+                          {...props}
+                        />
+                      )
+                    }
+                  />
+                }
               />
             </View>
             <Animated.View style={{ top: 80, alignItems: "flex-end" }}>
