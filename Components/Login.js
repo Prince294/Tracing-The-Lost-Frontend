@@ -136,7 +136,7 @@ export default function Login(props) {
             {
               flex: 1,
               flexDirection: "row",
-              backgroundColor: "#edf9fc",
+              backgroundColor: "#f0fbfd",
               paddingTop: 20,
             },
           ]}
@@ -209,14 +209,13 @@ const styles = StyleSheet.create({
   header: {
     width: width,
     height: height / 3,
-    paddingTop: 25,
     backgroundColor: "#fff",
   },
   backBtn: {
     position: "absolute",
     zIndex: 1,
     marginLeft: 20,
-    marginTop: 40,
+    marginTop: 50,
   },
   heading: {
     position: "absolute",

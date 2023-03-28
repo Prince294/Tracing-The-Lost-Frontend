@@ -113,8 +113,8 @@ export default function Home(props) {
           {listOpen === 0
             ? "Tracing The Lost"
             : listOpen === 1
-              ? "History"
-              : "Setting"}
+            ? "History"
+            : "Setting"}
         </Text>
       </Animated.View>
 
@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
     width: menuListWidth,
     height: height,
     backgroundColor: "white",
-    top: 31,
+    top: 0,
     left: -menuListWidth,
     zIndex: 10,
     alignItems: "center",
