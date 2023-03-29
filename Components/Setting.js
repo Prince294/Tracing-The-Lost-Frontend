@@ -19,6 +19,7 @@ import { apisPath } from "../Utils/path";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Loading from "../Shared/Loading";
 import Error from "../Shared/Error";
+import { ToastAndroid } from "react-native";
 
 const { height, width } = Dimensions.get("window");
 export default function Setting(props) {
@@ -28,14 +29,15 @@ export default function Setting(props) {
   const [date, setDate] = useState(new Date());
   const [open, setOpen] = useState(false);
   const [data, setData] = useState(props?.data);
+  const [profileImage, setProfileImage] = useState(null);
   const genderSelectList = [
     { label: "Male", value: "male" },
     { label: "Female", value: "female" },
     { label: "Others", value: "others" },
   ];
   const [gender, setGender] = useState({
-    id: props?.data?.gender?.toLowerCase(),
-    item: props?.data?.gender,
+    value: props?.data?.gender?.toLowerCase(),
+    label: props?.data?.gender,
   });
 
   useEffect(() => {
@@ -54,6 +56,7 @@ export default function Setting(props) {
 
     if (!result?.canceled) {
       setData((prev) => ({ ...prev, profile_image: result?.assets[0]?.uri }));
+      setProfileImage(result?.assets[0]?.uri);
     }
   };
 
@@ -65,20 +68,30 @@ export default function Setting(props) {
     formdata.append("name", data?.name);
     formdata.append("gender", data?.gender);
     formdata.append("dob", data?.dob);
-    formdata.append("profile_image", {
-      uri: data?.profile_image,
-      name: "userProfile.jpg",
-      type: "image/jpg",
-    });
+    if (profileImage) {
+      formdata.append("profile_image", {
+        uri: data?.profile_image,
+        name: "userProfile.jpg",
+        type: "image/jpg",
+      });
+    }
+
     http
-      .put(apisPath?.user?.userData, formdata, {
+      .post(apisPath?.user?.userEdit, formdata, {
         headers: { "Content-Type": "multipart/form-data" },
       })
       .then((res) => {
         setLoading(false);
         props?.handleUserDetails();
+
+        ToastAndroid.show(
+          "Details Saved Successfully",
+          ToastAndroid.LONG,
+          ToastAndroid.BOTTOM
+        );
       })
       .catch((err) => {
+        // console.log(err);
         setLoading(false);
         setErrorMessage(err?.response?.data?.message);
         setError(true);
@@ -161,7 +174,7 @@ export default function Setting(props) {
               valueField="value"
               value={gender}
               onChange={(el) => {
-                setData((prev) => ({ ...prev, gender: el?.item }));
+                setData((prev) => ({ ...prev, gender: el?.value }));
                 setGender(el);
               }}
             />

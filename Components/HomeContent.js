@@ -45,7 +45,7 @@ export default function HomeContent(props) {
   const [policeStationData, setPoliceStationData] = useState([]);
   const [traceMsg, setTraceMsg] = useState("");
   const [traceTitle, setTraceTitle] = useState("");
-  const [progressTime, setProgressTime] = useState(1);
+  const [progressTime, setProgressTime] = useState(200);
   const [progressDropStep, setProgressDropStep] = useState(1);
   var interval;
 
@@ -70,8 +70,14 @@ export default function HomeContent(props) {
   useEffect(() => {
     if (traceBtn) {
       interval = setTimeout(() => {
-        setProgress((prev) => prev + 1);
-      }, 100);
+        setProgress((prev) => {
+          if (prev + progressDropStep > 100) {
+            return 100;
+          } else {
+            return prev + progressDropStep;
+          }
+        });
+      }, progressTime);
     }
     if (progress >= 100) {
       setTraceBtn(false);
@@ -97,6 +103,16 @@ export default function HomeContent(props) {
       .then((res) => {
         // console.log(res?.data?.data);
         var data = res?.data?.data;
+
+        if (data.length < 4) {
+          setErrMsg(
+            "Server Deals with high amount of traffic, Please Try after some Time."
+          );
+          setError(true);
+          setLoading(false);
+          return;
+        }
+
         data.sort((a, b) => {
           const nameA = a?.distance?.toUpperCase();
           const nameB = b?.distance?.toUpperCase();
@@ -121,8 +137,6 @@ export default function HomeContent(props) {
           );
         }, 1000);
         setLoading(false);
-        setProgressTime(1);
-        setProgressDropStep(10);
       })
       .catch((err) => {
         console.log("police error", err);
@@ -157,10 +171,13 @@ export default function HomeContent(props) {
         setTraceMsg(
           "Suspect details are send to your police station, Thanks for helping"
         );
-        setMapAnimation(0);
+        // setMapAnimation(0);
+        setTimeout(() => {
+          setProgressDropStep(5);
+          setProgressTime(20);
+        }, 1500);
       })
       .catch((err) => {
-        console.log(err?.response?.data?.message);
         setTraceTitle("Details Not Found!");
         setTraceMsg(
           "We are working on it, Please be patience, We'll notify you Once we found the Details."

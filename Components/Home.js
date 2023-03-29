@@ -34,17 +34,13 @@ export default function Home(props) {
   }, []);
 
   const userDetails = async () => {
-    setLoading(true);
     let session = await AsyncStorage.getItem("session");
     http
       .post(apisPath?.user?.userData, { session: session })
       .then((res) => {
         setUserData(res?.data?.data);
-        setLoading(false);
-        setError(false);
       })
       .catch((err) => {
-        setLoading(false);
         setError(true);
         setErrMessage(err?.response?.data?.message);
       });

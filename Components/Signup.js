@@ -645,9 +645,9 @@ function SignupPersonalDetail({
 }) {
   const [calanderOpen, setCalanderOpen] = useState(false);
   const genderSelectList = [
-    { id: "male", item: "Male" },
-    { id: "female", item: "Female" },
-    { id: "others", item: "Others" },
+    { label: "Male", value: "male" },
+    { label: "Female", value: "female" },
+    { label: "Others", value: "others" },
   ];
   const [gender, setGender] = useState({});
   const [date, setDate] = useState(new Date());
@@ -706,7 +706,7 @@ function SignupPersonalDetail({
           value={gender}
           onChange={(el) => {
             setGender(el);
-            setPersonalData((prev) => ({ ...prev, gender: el?.item }));
+            setPersonalData((prev) => ({ ...prev, gender: el?.value }));
           }}
         />
       </View>
