@@ -13,7 +13,7 @@ import { Ionicons, AntDesign, FontAwesome5 } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { Button, IconButton, TextInput } from "@react-native-material/core";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import SelectBox from "react-native-multi-selectbox";
+import { Dropdown } from "react-native-element-dropdown";
 import http from "./Services/utility";
 import { apisPath } from "../Utils/path";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -29,9 +29,9 @@ export default function Setting(props) {
   const [open, setOpen] = useState(false);
   const [data, setData] = useState(props?.data);
   const genderSelectList = [
-    { id: "male", item: "Male" },
-    { id: "female", item: "Female" },
-    { id: "others", item: "Others" },
+    { label: "Male", value: "male" },
+    { label: "Female", value: "female" },
+    { label: "Others", value: "others" },
   ];
   const [gender, setGender] = useState({
     id: props?.data?.gender?.toLowerCase(),
@@ -151,6 +151,22 @@ export default function Setting(props) {
             )}
           </View>
           <View style={styles.fields}>
+            <Dropdown
+              style={styles.dropdown}
+              iconStyle={styles.iconStyle}
+              data={genderSelectList}
+              placeholder={"Select Gender"}
+              maxHeight={400}
+              labelField="label"
+              valueField="value"
+              value={gender}
+              onChange={(el) => {
+                setData((prev) => ({ ...prev, gender: el?.item }));
+                setGender(el);
+              }}
+            />
+          </View>
+          <View style={styles.fields}>
             <TextInput
               value={data?.mobile?.toString()}
               label="Mobile"
@@ -174,19 +190,7 @@ export default function Setting(props) {
               }}
             />
           </View>
-          <View style={styles.fields}>
-            <SelectBox
-              label="Select Gender"
-              options={genderSelectList}
-              value={gender}
-              onChange={(el) => {
-                setData((prev) => ({ ...prev, gender: el?.item }));
-                setGender(el);
-              }}
-              hideInputFilter={true}
-              listOptionProps={{ nestedScrollEnabled: true }}
-            />
-          </View>
+
           <View style={[styles.fields, styles.formSubmit]}>
             <TouchableOpacity onPress={handleSettingSubmit}>
               <FontAwesome5 name="check-circle" size={60} color="green" />
@@ -225,5 +229,15 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "flex-end",
     marginBottom: 40,
+  },
+  dropdown: {
+    height: 60,
+    borderColor: "gray",
+    borderBottomWidth: 1,
+    paddingHorizontal: 8,
+  },
+  iconStyle: {
+    width: 30,
+    height: 30,
   },
 });

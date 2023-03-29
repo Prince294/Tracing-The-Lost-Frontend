@@ -26,7 +26,7 @@ import Animated, {
 } from "react-native-reanimated";
 import Loading from "../Shared/Loading.js";
 import Error from "../Shared/Error.js";
-import SelectBox from "react-native-multi-selectbox";
+import { Dropdown } from "react-native-element-dropdown";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import * as ImagePicker from "expo-image-picker";
 import { RadioButton } from "react-native-paper";
@@ -695,15 +695,19 @@ function SignupPersonalDetail({
         />
       </View>
       <View>
-        <SelectBox
-          label="Select Gender"
-          options={genderSelectList}
+        <Dropdown
+          style={styles.dropdown}
+          iconStyle={styles.iconStyle}
+          data={genderSelectList}
+          placeholder={"Select Gender"}
+          maxHeight={400}
+          labelField="label"
+          valueField="value"
           value={gender}
           onChange={(el) => {
             setGender(el);
             setPersonalData((prev) => ({ ...prev, gender: el?.item }));
           }}
-          hideInputFilter={true}
         />
       </View>
       <View style={{ marginTop: 8 }}>
@@ -936,5 +940,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 4,
     marginTop: 10,
+  },
+  dropdown: {
+    height: 60,
+    borderColor: "gray",
+    borderBottomWidth: 1,
+    paddingHorizontal: 8,
+  },
+  iconStyle: {
+    width: 30,
+    height: 30,
   },
 });

@@ -16,6 +16,8 @@ import SideBar from "./SideBar";
 import HomeContent from "./HomeContent";
 import History from "./History";
 import Setting from "./Setting";
+import { StatusBar } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const { height, width } = Dimensions.get("window");
 const menuListWidth = width;
@@ -101,7 +103,8 @@ export default function Home(props) {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
+      <StatusBar backgroundColor="black" barStyle="light-content" />
       <Animated.View style={[styles.appBar, animatedStyle]}>
         <View style={{ position: "absolute", zIndex: 100, left: 6 }}>
           <IconButton
@@ -141,7 +144,7 @@ export default function Home(props) {
 
       {loading && <Loading />}
       {error && <Error message={errMessage} errorClose={handleErrorButton} />}
-    </View>
+    </SafeAreaView>
   );
 }
 
