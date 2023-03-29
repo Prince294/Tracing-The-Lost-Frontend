@@ -103,7 +103,6 @@ export default function HomeContent(props) {
       .then((res) => {
         // console.log(res?.data?.data);
         var data = res?.data?.data;
-
         if (data.length < 4) {
           setErrMsg(
             "Server Deals with high amount of traffic, Please Try after some Time."
@@ -139,7 +138,9 @@ export default function HomeContent(props) {
         setLoading(false);
       })
       .catch((err) => {
-        console.log("police error", err);
+        // console.log("police error", err);
+        setErrMsg(err?.response?.data?.message);
+        setError(true);
         setLoading(false);
       });
   };
