@@ -7,9 +7,9 @@
     "icon": "./assets/app-icon.jpg",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/app-icon.jpg",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#757670"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -19,8 +19,8 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/app-icon.jpg",
+        "backgroundColor": "#757670"
       },
       "package": "com.reflex1408.tracingthelost"
     },

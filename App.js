@@ -28,22 +28,26 @@ export default function App() {
       setLoading(false);
     }
     console.log(session);
-    http
-      .post(apisPath?.user?.checkLogin, { session: session })
-      .then((res) => {
-        setLoading(false);
-        if (res?.data?.on_step >= 2) {
+    if (session) {
+      http
+        .post(apisPath?.user?.checkLogin, { session: session })
+        .then((res) => {
+          setLoading(false);
+          if (res?.data?.on_step >= 2) {
+            setLandingPage(true);
+            setOnStep(res?.data?.on_step);
+          } else {
+            setOnStep(0);
+            setLandingPage(false);
+          }
+        })
+        .catch((err) => {
           setLandingPage(true);
-          setOnStep(res?.data?.on_step);
-        } else {
-          setOnStep(0);
-          setLandingPage(false);
-        }
-      })
-      .catch((err) => {
-        setLandingPage(true);
-        setLoading(false);
-      });
+          setLoading(false);
+        });
+    } else {
+      setLoading(false);
+    }
   };
   const landingPageHandler = (el) => {
     setLandingPage(el);

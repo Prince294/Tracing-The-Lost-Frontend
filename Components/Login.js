@@ -25,8 +25,8 @@ import { Text } from "react-native";
 
 const { height, width } = Dimensions.get("window");
 export default function Login(props) {
-  const textInput0 = useRef();
-  const textInput1 = useRef();
+  const textInputL0 = useRef();
+  const textInputL1 = useRef();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [errMessage, setErrMessage] = useState("");
@@ -34,6 +34,19 @@ export default function Login(props) {
   const [password, setPassword] = useState("");
   const [validData, setValidData] = useState(true);
   const [showPassword, setShowPassword] = useState(true);
+
+  useEffect(() => {
+    const keyboardDidHideListener = Keyboard.addListener(
+      "keyboardDidHide",
+      () => {
+        textInputL0?.current?.blur();
+        textInputL1?.current?.blur();
+      }
+    );
+    return () => {
+      keyboardDidHideListener.remove();
+    };
+  }, []);
 
   useEffect(() => {
     const backAction = () => {
@@ -149,8 +162,8 @@ export default function Login(props) {
                 variant="standard"
                 onChangeText={(el) => setUsernameEmail(el)}
                 style={{ marginBottom: 16 }}
-                ref={textInput0}
-                onSubmitEditing={() => textInput1?.current?.focus()}
+                ref={textInputL0}
+                onSubmitEditing={() => textInputL1?.current?.focus()}
               />
             </View>
             <View>
@@ -159,7 +172,7 @@ export default function Login(props) {
                 label="Enter Password"
                 variant="standard"
                 onChangeText={(el) => setPassword(el)}
-                ref={textInput1}
+                ref={textInputL1}
                 onSubmitEditing={handleFormSubmit}
                 secureTextEntry={showPassword}
                 autoCorrect={false}

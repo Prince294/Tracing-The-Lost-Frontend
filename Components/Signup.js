@@ -41,6 +41,7 @@ export default function Signup(props) {
   const textInput4 = useRef();
   const textInput5 = useRef();
   const textInput6 = useRef();
+  const textInput7 = useRef();
   const [translate, setTranslate] = useState(-props?.onStep * width);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
@@ -70,7 +71,6 @@ export default function Signup(props) {
   const [showPassword, setShowPassword] = useState(true);
   const [validRePassword, setvalidRePassword] = useState(false);
   const [showRePassword, setShowRePassword] = useState(true);
-
   const [validOTP, setvalidOTP] = useState(false);
   const [username, setUsername] = useState({
     username: "",
@@ -86,8 +86,27 @@ export default function Signup(props) {
   const [OTP, setOTP] = useState("");
 
   useEffect(() => {
+    const keyboardDidHideListener = Keyboard.addListener(
+      "keyboardDidHide",
+      () => {
+        textInput0?.current?.blur();
+        textInput1?.current?.blur();
+        textInput2?.current?.blur();
+        textInput3?.current?.blur();
+        textInput4?.current?.blur();
+        textInput5?.current?.blur();
+        textInput6?.current?.blur();
+        textInput7?.current?.blur();
+      }
+    );
+    return () => {
+      keyboardDidHideListener.remove();
+    };
+  }, []);
+
+  useEffect(() => {
     const backAction = () => {
-      if (formStep !== 0 && props?.onStep !== 4) {
+      if (formStep > 0 && props?.onStep !== 4) {
         setFormStep(formStep - 1);
       } else if (props?.onStep === 4 || formStep === 0) {
         Alert.alert("Hold on!", "Are you sure you want to go back?", [
@@ -96,21 +115,22 @@ export default function Signup(props) {
             onPress: () => null,
             style: "cancel",
           },
-          { text: "YES", onPress: () => props?.pageRender(0) },
+          { text: "YES", onPress: () => props?.mainScreen() },
         ]);
-        return true;
-      } else {
-        props?.pageRender(0);
       }
       return true;
     };
 
     const backHandler = BackHandler.addEventListener(
       "hardwareBackPress",
-      backAction
+      () => {
+        backAction();
+      }
     );
 
-    return () => backHandler.remove();
+    return () => {
+      backHandler.remove();
+    };
   }, []);
 
   useEffect(() => {
@@ -428,6 +448,7 @@ export default function Signup(props) {
               ref={textInput0}
               onSubmitEditing={() => textInput1?.current?.focus()}
               color={validUsername ? "green" : "red"}
+              // blurOnSubmit={false}
             />
           </View>
           <View>
@@ -440,6 +461,7 @@ export default function Signup(props) {
               onSubmitEditing={() => textInput2?.current?.focus()}
               color={validEmail ? "green" : "red"}
               style={{ color: "red" }}
+              // blurOnSubmit={false}
             />
           </View>
           <View>
@@ -451,6 +473,7 @@ export default function Signup(props) {
               ref={textInput2}
               onSubmitEditing={handleUserEmailMobileClick}
               color={validMobile ? "green" : "red"}
+              // blurOnSubmit={false}
             />
           </View>
           <View style={styles.formContNext}>
@@ -469,7 +492,7 @@ export default function Signup(props) {
         </View>
 
         {/* register password view */}
-        <View style={styles.formCont}>
+        <View style={[styles.formCont, { rowGap: 25 }]}>
           <View>
             <TextInput
               value={password}
@@ -503,8 +526,6 @@ export default function Signup(props) {
             />
           </View>
           <View>
-            <TextInput />
-
             <TextInput
               value={rePassword}
               color={validRePassword ? "green" : "red"}
@@ -517,7 +538,7 @@ export default function Signup(props) {
               autoCorrect={false}
               trailing={
                 <IconButton
-                  onPress={() => setReShowPassword((el) => !el)}
+                  onPress={() => setShowRePassword((el) => !el)}
                   style={{ right: 10, bottom: 3 }}
                   icon={(props) =>
                     showRePassword ? (
@@ -624,6 +645,7 @@ export default function Signup(props) {
         {/* register aadharcard and verified user view */}
         <View style={styles.formCont}>
           <SignupAadharDetail
+            textInput7={textInput7}
             verifiedData={verifiedData}
             setVerifiedData={setVerifiedData}
             handleAadharDetailSubmit={handleAadharDetailSubmit}
@@ -757,6 +779,7 @@ function SignupPersonalDetail({
 }
 
 function SignupAadharDetail({
+  textInput7,
   verifiedData,
   setVerifiedData,
   handleAadharDetailSubmit,
@@ -812,6 +835,7 @@ function SignupAadharDetail({
           variant="standard"
           onChangeText={aadharHandleChange}
           style={{ marginBottom: 6 }}
+          ref={textInput7}
         />
         {!aadharData?.found && validAadhar ? (
           <Text style={{ color: "green", fontSize: 11, top: -6 }}>

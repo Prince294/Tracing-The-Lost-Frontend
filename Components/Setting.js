@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   LogBox,
   ScrollView,
+  Keyboard,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { Ionicons, AntDesign, FontAwesome5 } from "@expo/vector-icons";
@@ -23,6 +24,7 @@ import { ToastAndroid } from "react-native";
 
 const { height, width } = Dimensions.get("window");
 export default function Setting(props) {
+  const textInput0 = useRef();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("Somthing Gonna Happen!");
@@ -39,6 +41,18 @@ export default function Setting(props) {
     value: props?.data?.gender?.toLowerCase(),
     label: props?.data?.gender,
   });
+
+  useEffect(() => {
+    const keyboardDidHideListener = Keyboard.addListener(
+      "keyboardDidHide",
+      () => {
+        textInput0?.current?.blur();
+      }
+    );
+    return () => {
+      keyboardDidHideListener.remove();
+    };
+  }, []);
 
   useEffect(() => {
     setData((current) => {
@@ -124,6 +138,7 @@ export default function Setting(props) {
               label="Name"
               variant="standard"
               onChangeText={(el) => setData((prev) => ({ ...prev, name: el }))}
+              ref={textInput0}
             />
           </View>
           <View style={styles.fields}>
