@@ -446,7 +446,11 @@ export default function Signup(props) {
               variant="standard"
               onChangeText={usernameHandleChange}
               ref={textInput0}
-              onSubmitEditing={() => textInput1?.current?.focus()}
+              onSubmitEditing={() =>
+                setTimeout(() => {
+                  textInput1?.current?.focus();
+                }, 400)
+              }
               color={validUsername ? "green" : "red"}
               // blurOnSubmit={false}
             />
@@ -458,7 +462,11 @@ export default function Signup(props) {
               variant="standard"
               onChangeText={emailHandleChange}
               ref={textInput1}
-              onSubmitEditing={() => textInput2?.current?.focus()}
+              onSubmitEditing={() =>
+                setTimeout(() => {
+                  textInput2?.current?.focus();
+                }, 400)
+              }
               color={validEmail ? "green" : "red"}
               style={{ color: "red" }}
               // blurOnSubmit={false}
@@ -502,7 +510,11 @@ export default function Signup(props) {
               onChangeText={passwordHandleChange}
               ref={textInput3}
               autoFocus={formStep === 1 ? true : false}
-              onSubmitEditing={() => textInput4?.current?.focus()}
+              onSubmitEditing={() =>
+                setTimeout(() => {
+                  textInput4?.current?.focus();
+                }, 400)
+              }
               secureTextEntry={showPassword}
               autoCorrect={false}
               trailing={

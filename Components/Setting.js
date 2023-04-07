@@ -9,7 +9,7 @@ import {
   ScrollView,
   Keyboard,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Ionicons, AntDesign, FontAwesome5 } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { Button, IconButton, TextInput } from "@react-native-material/core";

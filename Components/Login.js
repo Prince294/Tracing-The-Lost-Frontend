@@ -163,7 +163,11 @@ export default function Login(props) {
                 onChangeText={(el) => setUsernameEmail(el)}
                 style={{ marginBottom: 16 }}
                 ref={textInputL0}
-                onSubmitEditing={() => textInputL1?.current?.focus()}
+                onSubmitEditing={() =>
+                  setTimeout(() => {
+                    textInputL1?.current?.focus();
+                  }, 400)
+                }
               />
             </View>
             <View>
