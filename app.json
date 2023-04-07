@@ -4,10 +4,10 @@
     "slug": "tracing-the-lost",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/app-icon.jpg",
+    "icon": "./assets/app-icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/app-icon.jpg",
+      "image": "./assets/app-icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#757670"
     },
@@ -19,7 +19,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/app-icon.jpg",
+        "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#757670"
       },
       "package": "com.reflex1408.tracingthelost"
@@ -27,16 +27,10 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "runtimeVersion": {
-      "policy": "sdkVersion"
-    },
     "extra": {
       "eas": {
-        "projectId": "97cebd99-4c9e-494a-b63c-6a877f509a20"
+        "projectId": "58198649-706b-4dd6-b5ce-144bfffb9af7"
       }
-    },
-    "updates": {
-      "url": "https://u.expo.dev/97cebd99-4c9e-494a-b63c-6a877f509a20"
     }
   }
 }
