@@ -66,17 +66,7 @@ export default function Home(props) {
         return {
             transform: [
                 {
-                    translateX: withTiming(interpolation, { duration: 500 }),
-                },
-            ],
-        };
-    });
-    const barAnimatedStyle = useAnimatedStyle(() => {
-        const interpolation = interpolate(menuOpen, [0, 1], [0, menuListWidth]);
-        return {
-            transform: [
-                {
-                    translateX: withTiming(interpolation, { duration: 500 }),
+                    translateX: withTiming(interpolation, { duration: 250 }),
                 },
             ],
         };
@@ -106,7 +96,7 @@ export default function Home(props) {
 
     return (
         <View style={styles.container}>
-            <Animated.View style={[styles.appBar, barAnimatedStyle]}>
+            <Animated.View style={[styles.appBar, animatedStyle]}>
                 <View style={{ position: 'absolute', zIndex: 100, left: 6 }}>
                     <IconButton onPress={handleMenuClick} icon={props => <Icon name="menu" {...props} />} />
                 </View>

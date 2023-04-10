@@ -413,7 +413,7 @@ export default function Signup(props) {
                     <View style={[styles.formContNext, { justifyContent: 'space-between' }]}>
                         <TouchableOpacity
                             onPress={() => {
-                                setFormStep(2);
+                                setFormStep(1);
                             }}
                         >
                             <AntDesign name="leftcircle" size={60} color="black" />
@@ -489,7 +489,6 @@ export default function Signup(props) {
                             label="Gender"
                             variant="standard"
                             onChangeText={(el) => setPersonalData((prev) => ({ ...prev, gender: el }))}
-                            // ref={textInput6}
                             onSubmitEditing={() => textInput2?.current?.focus()}
                             color={validEmail ? "green" : 'red'}
                             style={{ color: 'red' }}
@@ -501,7 +500,6 @@ export default function Signup(props) {
                             label="Date of Birth"
                             variant="standard"
                             onChangeText={(el) => setPersonalData((prev) => ({ ...prev, dob: el }))}
-                            // ref={textInput7}
                             onSubmitEditing={handleUserEmailMobileClick}
                             color={validMobile ? "green" : 'red'}
                         />
