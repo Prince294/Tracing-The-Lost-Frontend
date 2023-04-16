@@ -103,7 +103,7 @@ export default function HomeContent(props) {
       .then((res) => {
         // console.log(res?.data?.data);
         var data = res?.data?.data;
-        if (data.length < 4) {
+        if (data.length < 2) {
           setErrMsg(
             "Server Deals with high amount of traffic, Please Try after some Time."
           );
