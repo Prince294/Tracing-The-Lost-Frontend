@@ -300,7 +300,15 @@ export default function Signup(props) {
         },
         {
           text: "YES",
-          onPress: () => handleLogout(),
+          onPress: () => {
+            setregisterData({
+              username: "",
+              email: "",
+              mobile: "",
+              password: "",
+            });
+            handleLogout()
+          },
         },
       ]
     );
@@ -325,7 +333,16 @@ export default function Signup(props) {
   };
 
   const ReRegisterAgainHandler = () => {
+    setLoading(true);
+    setregisterData({
+      username: "",
+      email: "",
+      mobile: "",
+      password: "",
+    });
+    handleLogout()
     setFormStep(0);
+    setLoading(false);
   };
 
   // handle change all functions
