@@ -7,36 +7,52 @@ import {
   TouchableOpacity,
   LogBox,
   ScrollView,
+  Keyboard,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Ionicons, AntDesign, FontAwesome5 } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { Button, IconButton, TextInput } from "@react-native-material/core";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import SelectBox from "react-native-multi-selectbox";
+import { Dropdown } from "react-native-element-dropdown";
 import http from "./Services/utility";
 import { apisPath } from "../Utils/path";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Loading from "../Shared/Loading";
 import Error from "../Shared/Error";
+import { ToastAndroid } from "react-native";
 
 const { height, width } = Dimensions.get("window");
 export default function Setting(props) {
+  const textInput0 = useRef();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("Somthing Gonna Happen!");
   const [date, setDate] = useState(new Date());
   const [open, setOpen] = useState(false);
   const [data, setData] = useState(props?.data);
+  const [profileImage, setProfileImage] = useState(null);
   const genderSelectList = [
-    { id: "male", item: "Male" },
-    { id: "female", item: "Female" },
-    { id: "others", item: "Others" },
+    { label: "Male", value: "male" },
+    { label: "Female", value: "female" },
+    { label: "Others", value: "others" },
   ];
   const [gender, setGender] = useState({
-    id: props?.data?.gender?.toLowerCase(),
-    item: props?.data?.gender,
+    value: props?.data?.gender?.toLowerCase(),
+    label: props?.data?.gender,
   });
+
+  useEffect(() => {
+    const keyboardDidHideListener = Keyboard.addListener(
+      "keyboardDidHide",
+      () => {
+        textInput0?.current?.blur();
+      }
+    );
+    return () => {
+      keyboardDidHideListener.remove();
+    };
+  }, []);
 
   useEffect(() => {
     setData((current) => {
@@ -54,6 +70,7 @@ export default function Setting(props) {
 
     if (!result?.canceled) {
       setData((prev) => ({ ...prev, profile_image: result?.assets[0]?.uri }));
+      setProfileImage(result?.assets[0]?.uri);
     }
   };
 
@@ -65,20 +82,30 @@ export default function Setting(props) {
     formdata.append("name", data?.name);
     formdata.append("gender", data?.gender);
     formdata.append("dob", data?.dob);
-    formdata.append("profile_image", {
-      uri: data?.profile_image,
-      name: "userProfile.jpg",
-      type: "image/jpg",
-    });
+    if (profileImage) {
+      formdata.append("profile_image", {
+        uri: data?.profile_image,
+        name: "userProfile.jpg",
+        type: "image/jpg",
+      });
+    }
+
     http
-      .put(apisPath?.user?.userData, formdata, {
+      .post(apisPath?.user?.userEdit, formdata, {
         headers: { "Content-Type": "multipart/form-data" },
       })
       .then((res) => {
         setLoading(false);
         props?.handleUserDetails();
+
+        ToastAndroid.show(
+          "Details Saved Successfully",
+          ToastAndroid.LONG,
+          ToastAndroid.BOTTOM
+        );
       })
       .catch((err) => {
+        // console.log(err);
         setLoading(false);
         setErrorMessage(err?.response?.data?.message);
         setError(true);
@@ -111,6 +138,7 @@ export default function Setting(props) {
               label="Name"
               variant="standard"
               onChangeText={(el) => setData((prev) => ({ ...prev, name: el }))}
+              ref={textInput0}
             />
           </View>
           <View style={styles.fields}>
@@ -151,6 +179,22 @@ export default function Setting(props) {
             )}
           </View>
           <View style={styles.fields}>
+            <Dropdown
+              style={styles.dropdown}
+              iconStyle={styles.iconStyle}
+              data={genderSelectList}
+              placeholder={"Select Gender"}
+              maxHeight={400}
+              labelField="label"
+              valueField="value"
+              value={gender}
+              onChange={(el) => {
+                setData((prev) => ({ ...prev, gender: el?.value }));
+                setGender(el);
+              }}
+            />
+          </View>
+          <View style={styles.fields}>
             <TextInput
               value={data?.mobile?.toString()}
               label="Mobile"
@@ -174,19 +218,7 @@ export default function Setting(props) {
               }}
             />
           </View>
-          <View style={styles.fields}>
-            <SelectBox
-              label="Select Gender"
-              options={genderSelectList}
-              value={gender}
-              onChange={(el) => {
-                setData((prev) => ({ ...prev, gender: el?.item }));
-                setGender(el);
-              }}
-              hideInputFilter={true}
-              listOptionProps={{ nestedScrollEnabled: true }}
-            />
-          </View>
+
           <View style={[styles.fields, styles.formSubmit]}>
             <TouchableOpacity onPress={handleSettingSubmit}>
               <FontAwesome5 name="check-circle" size={60} color="green" />
@@ -225,5 +257,15 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "flex-end",
     marginBottom: 40,
+  },
+  dropdown: {
+    height: 60,
+    borderColor: "gray",
+    borderBottomWidth: 1,
+    paddingHorizontal: 8,
+  },
+  iconStyle: {
+    width: 30,
+    height: 30,
   },
 });

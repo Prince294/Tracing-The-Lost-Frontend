@@ -14,6 +14,7 @@ export const apisPath = {
     validateMobile: "user/validate/mobile",
     user: "user",
     userDelete: "user/delete",
+    userEdit: "user/edit",
     userData: "user/data",
     verification: "user/verification",
     userLogin: "user/login",

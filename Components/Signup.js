@@ -26,12 +26,13 @@ import Animated, {
 } from "react-native-reanimated";
 import Loading from "../Shared/Loading.js";
 import Error from "../Shared/Error.js";
-import SelectBox from "react-native-multi-selectbox";
+import { Dropdown } from "react-native-element-dropdown";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import * as ImagePicker from "expo-image-picker";
 import { RadioButton } from "react-native-paper";
+import { ImageBackground } from "react-native";
 
-const { height, width } = Dimensions.get('window');
+const { height, width } = Dimensions.get("window");
 export default function Signup(props) {
   const textInput0 = useRef();
   const textInput1 = useRef();
@@ -40,6 +41,7 @@ export default function Signup(props) {
   const textInput4 = useRef();
   const textInput5 = useRef();
   const textInput6 = useRef();
+  const textInput7 = useRef();
   const [translate, setTranslate] = useState(-props?.onStep * width);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
@@ -66,7 +68,9 @@ export default function Signup(props) {
   const [validEmail, setvalidEmail] = useState(false);
   const [validMobile, setvalidMobile] = useState(false);
   const [validPassword, setvalidPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(true);
   const [validRePassword, setvalidRePassword] = useState(false);
+  const [showRePassword, setShowRePassword] = useState(true);
   const [validOTP, setvalidOTP] = useState(false);
   const [username, setUsername] = useState({
     username: "",
@@ -82,8 +86,27 @@ export default function Signup(props) {
   const [OTP, setOTP] = useState("");
 
   useEffect(() => {
+    const keyboardDidHideListener = Keyboard.addListener(
+      "keyboardDidHide",
+      () => {
+        textInput0?.current?.blur();
+        textInput1?.current?.blur();
+        textInput2?.current?.blur();
+        textInput3?.current?.blur();
+        textInput4?.current?.blur();
+        textInput5?.current?.blur();
+        textInput6?.current?.blur();
+        textInput7?.current?.blur();
+      }
+    );
+    return () => {
+      keyboardDidHideListener.remove();
+    };
+  }, []);
+
+  useEffect(() => {
     const backAction = () => {
-      if (formStep !== 0 && props?.onStep !== 4) {
+      if (formStep > 0 && props?.onStep !== 4) {
         setFormStep(formStep - 1);
       } else if (props?.onStep === 4 || formStep === 0) {
         Alert.alert("Hold on!", "Are you sure you want to go back?", [
@@ -92,21 +115,22 @@ export default function Signup(props) {
             onPress: () => null,
             style: "cancel",
           },
-          { text: "YES", onPress: () => props?.pageRender(0) },
+          { text: "YES", onPress: () => props?.mainScreen() },
         ]);
-        return true;
-      } else {
-        props?.pageRender(0);
       }
       return true;
     };
 
     const backHandler = BackHandler.addEventListener(
       "hardwareBackPress",
-      backAction
+      () => {
+        backAction();
+      }
     );
 
-    return () => backHandler.remove();
+    return () => {
+      backHandler.remove();
+    };
   }, []);
 
   useEffect(() => {
@@ -177,7 +201,7 @@ export default function Signup(props) {
         setFormStep(4);
       })
       .catch((err) => {
-        console.log(err)
+        console.log(err);
         setLoading(false);
         setErrorMessage(err?.response?.data?.message);
         setError(true);
@@ -193,7 +217,7 @@ export default function Signup(props) {
     if (verifiedData?.is_verified_user) {
       formdata.append("verified_user_id_proof", {
         uri: verifiedData?.verified_user_id_proof,
-        name: "userProfile.jpg",
+        name: "verifiedData.jpg",
         type: "image/jpg",
       });
     }
@@ -276,7 +300,15 @@ export default function Signup(props) {
         },
         {
           text: "YES",
-          onPress: () => handleLogout(),
+          onPress: () => {
+            setregisterData({
+              username: "",
+              email: "",
+              mobile: "",
+              password: "",
+            });
+            handleLogout()
+          },
         },
       ]
     );
@@ -301,7 +333,16 @@ export default function Signup(props) {
   };
 
   const ReRegisterAgainHandler = () => {
+    setLoading(true);
+    setregisterData({
+      username: "",
+      email: "",
+      mobile: "",
+      password: "",
+    });
+    handleLogout()
     setFormStep(0);
+    setLoading(false);
   };
 
   // handle change all functions
@@ -381,22 +422,38 @@ export default function Signup(props) {
   });
 
   return (
-    <Stack spacing={2} style={{ flex: 1, flexDirection: "column" }}>
-      <View style={styles.backBtn}>
-        <TouchableOpacity
-          onPress={() => {
-            props?.mainScreen();
-          }}
-        >
-          <AntDesign name="leftcircle" size={36} color="white" />
-        </TouchableOpacity>
-      </View>
-      <View style={{ height: 310 }}>
-        <Image source={require("../assets/wave-1.png")} />
-        <View style={{ position: 'absolute', width: width, alignItems: 'center', bottom: 16 }}><Text style={{ fontSize: 24, color: '#7149C6' }}>Signup</Text></View>
+    <Stack spacing={0} style={{ flex: 1, flexDirection: "column" }}>
+      <View style={styles.header}>
+        <ImageBackground
+          source={require("../assets/wave-3.jpg")}
+          resizeMode="cover"
+          style={{ flex: 1 }}
+        ></ImageBackground>
+        <View style={styles.backBtn}>
+          <TouchableOpacity
+            onPress={() => {
+              props?.mainScreen();
+            }}
+          >
+            <AntDesign name="leftcircle" size={32} color="#000" />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.heading}>
+          <Text style={styles.headingText}>Create{"\n"}Account</Text>
+        </View>
       </View>
 
-      <Animated.View style={[{ flexDirection: "row" }, animatedStyle]}>
+      <Animated.View
+        style={[
+          {
+            flex: 1,
+            flexDirection: "row",
+            backgroundColor: "#f0fbfd",
+            paddingTop: 20,
+          },
+          animatedStyle,
+        ]}
+      >
         {/* register username, email, and mobile view  */}
         <View style={styles.formCont}>
           <View>
@@ -406,8 +463,13 @@ export default function Signup(props) {
               variant="standard"
               onChangeText={usernameHandleChange}
               ref={textInput0}
-              onSubmitEditing={() => textInput1?.current?.focus()}
+              onSubmitEditing={() =>
+                setTimeout(() => {
+                  textInput1?.current?.focus();
+                }, 400)
+              }
               color={validUsername ? "green" : "red"}
+              // blurOnSubmit={false}
             />
           </View>
           <View>
@@ -417,9 +479,14 @@ export default function Signup(props) {
               variant="standard"
               onChangeText={emailHandleChange}
               ref={textInput1}
-              onSubmitEditing={() => textInput2?.current?.focus()}
+              onSubmitEditing={() =>
+                setTimeout(() => {
+                  textInput2?.current?.focus();
+                }, 400)
+              }
               color={validEmail ? "green" : "red"}
               style={{ color: "red" }}
+              // blurOnSubmit={false}
             />
           </View>
           <View>
@@ -431,6 +498,7 @@ export default function Signup(props) {
               ref={textInput2}
               onSubmitEditing={handleUserEmailMobileClick}
               color={validMobile ? "green" : "red"}
+              // blurOnSubmit={false}
             />
           </View>
           <View style={styles.formContNext}>
@@ -449,29 +517,72 @@ export default function Signup(props) {
         </View>
 
         {/* register password view */}
-        <View style={styles.formCont}>
+        <View style={[styles.formCont, { rowGap: 25 }]}>
           <View>
             <TextInput
-              color={validPassword ? "green" : "red"}
               value={password}
-              label="Password"
+              color={validPassword ? "green" : "red"}
+              label="Enter Password"
               variant="standard"
               onChangeText={passwordHandleChange}
-              style={{ marginBottom: 6 }}
               ref={textInput3}
               autoFocus={formStep === 1 ? true : false}
-              onSubmitEditing={() => textInput4?.current?.focus()}
+              onSubmitEditing={() =>
+                setTimeout(() => {
+                  textInput4?.current?.focus();
+                }, 400)
+              }
+              secureTextEntry={showPassword}
+              autoCorrect={false}
+              trailing={
+                <IconButton
+                  onPress={() => setShowPassword((el) => !el)}
+                  style={{ right: 10, bottom: 3 }}
+                  icon={(props) =>
+                    showPassword ? (
+                      <Entypo name="eye" size={24} color="black" {...props} />
+                    ) : (
+                      <Entypo
+                        name="eye-with-line"
+                        size={24}
+                        color="black"
+                        {...props}
+                      />
+                    )
+                  }
+                />
+              }
             />
           </View>
           <View>
             <TextInput
-              color={validRePassword ? "green" : "red"}
               value={rePassword}
+              color={validRePassword ? "green" : "red"}
               label="Re-Enter Password"
               variant="standard"
               onChangeText={rePasswordHandleChange}
               ref={textInput4}
               onSubmitEditing={handlePasswordClick}
+              secureTextEntry={showRePassword}
+              autoCorrect={false}
+              trailing={
+                <IconButton
+                  onPress={() => setShowRePassword((el) => !el)}
+                  style={{ right: 10, bottom: 3 }}
+                  icon={(props) =>
+                    showRePassword ? (
+                      <Entypo name="eye" size={24} color="black" {...props} />
+                    ) : (
+                      <Entypo
+                        name="eye-with-line"
+                        size={24}
+                        color="black"
+                        {...props}
+                      />
+                    )
+                  }
+                />
+              }
             />
           </View>
           <View
@@ -479,7 +590,7 @@ export default function Signup(props) {
           >
             <TouchableOpacity
               onPress={() => {
-                setFormStep(2);
+                setFormStep(0);
               }}
             >
               <AntDesign name="leftcircle" size={60} color="black" />
@@ -563,6 +674,7 @@ export default function Signup(props) {
         {/* register aadharcard and verified user view */}
         <View style={styles.formCont}>
           <SignupAadharDetail
+            textInput7={textInput7}
             verifiedData={verifiedData}
             setVerifiedData={setVerifiedData}
             handleAadharDetailSubmit={handleAadharDetailSubmit}
@@ -584,9 +696,9 @@ function SignupPersonalDetail({
 }) {
   const [calanderOpen, setCalanderOpen] = useState(false);
   const genderSelectList = [
-    { id: "male", item: "Male" },
-    { id: "female", item: "Female" },
-    { id: "others", item: "Others" },
+    { label: "Male", value: "male" },
+    { label: "Female", value: "female" },
+    { label: "Others", value: "others" },
   ];
   const [gender, setGender] = useState({});
   const [date, setDate] = useState(new Date());
@@ -634,15 +746,19 @@ function SignupPersonalDetail({
         />
       </View>
       <View>
-        <SelectBox
-          label="Select Gender"
-          options={genderSelectList}
+        <Dropdown
+          style={styles.dropdown}
+          iconStyle={styles.iconStyle}
+          data={genderSelectList}
+          placeholder={"Select Gender"}
+          maxHeight={400}
+          labelField="label"
+          valueField="value"
           value={gender}
           onChange={(el) => {
             setGender(el);
-            setPersonalData((prev) => ({ ...prev, gender: el?.item }));
+            setPersonalData((prev) => ({ ...prev, gender: el?.value }));
           }}
-          hideInputFilter={true}
         />
       </View>
       <View style={{ marginTop: 8 }}>
@@ -678,8 +794,8 @@ function SignupPersonalDetail({
       </View>
       <View style={styles.formContNext}>
         {personalData?.dob !== "" &&
-          personalData?.name?.length > 2 &&
-          personalData?.gender !== "" ? (
+        personalData?.name?.length > 2 &&
+        personalData?.gender !== "" ? (
           <TouchableOpacity onPress={handlePersonalDetailSubmit}>
             <FontAwesome5 name="arrow-circle-right" size={60} color="green" />
           </TouchableOpacity>
@@ -692,6 +808,7 @@ function SignupPersonalDetail({
 }
 
 function SignupAadharDetail({
+  textInput7,
   verifiedData,
   setVerifiedData,
   handleAadharDetailSubmit,
@@ -747,6 +864,7 @@ function SignupAadharDetail({
           variant="standard"
           onChangeText={aadharHandleChange}
           style={{ marginBottom: 6 }}
+          ref={textInput7}
         />
         {!aadharData?.found && validAadhar ? (
           <Text style={{ color: "green", fontSize: 11, top: -6 }}>
@@ -811,8 +929,8 @@ function SignupAadharDetail({
       )}
       <View style={styles.formContNext}>
         {validAadhar &&
-          (!verifiedData?.is_verified_user ||
-            (verifiedData?.is_verified_user && selectedImage)) ? (
+        (!verifiedData?.is_verified_user ||
+          (verifiedData?.is_verified_user && selectedImage)) ? (
           <TouchableOpacity onPress={handleAadharDetailSubmit}>
             <FontAwesome5 name="arrow-circle-right" size={60} color="green" />
           </TouchableOpacity>
@@ -825,11 +943,28 @@ function SignupAadharDetail({
 }
 
 const styles = StyleSheet.create({
+  header: {
+    width: width,
+    height: height / 3,
+    backgroundColor: "#fff",
+  },
   backBtn: {
     position: "absolute",
-    top: 32,
-    left: 25,
     zIndex: 1,
+    marginLeft: 20,
+    marginTop: 50,
+  },
+  heading: {
+    position: "absolute",
+    backgroundColor: "transparent",
+    width: width,
+    height: "50%",
+    bottom: 0,
+  },
+  headingText: {
+    fontSize: 30,
+    color: "#049bc4",
+    paddingLeft: 24,
   },
   formCont: {
     paddingHorizontal: 40,
@@ -858,5 +993,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 4,
     marginTop: 10,
+  },
+  dropdown: {
+    height: 60,
+    borderColor: "gray",
+    borderBottomWidth: 1,
+    paddingHorizontal: 8,
+  },
+  iconStyle: {
+    width: 30,
+    height: 30,
   },
 });

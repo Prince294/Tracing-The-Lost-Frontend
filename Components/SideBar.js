@@ -3,12 +3,13 @@ import React from "react";
 import { Divider, IconButton, ListItem } from "@react-native-material/core";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 import { Ionicons, AntDesign } from "@expo/vector-icons";
+import { SafeAreaView } from "react-native";
 
 const { height, width } = Dimensions.get("window");
 export default function SideBar(props) {
   const { data } = props;
   return (
-    <View style={styles.sidebar}>
+    <SafeAreaView style={styles.sidebar}>
       <View style={{ position: "absolute", right: 10, zIndex: 1 }}>
         <IconButton
           onPress={props?.handleBack}
@@ -84,7 +85,7 @@ export default function SideBar(props) {
       <View style={styles.bottamText}>
         <Text>v1.0 &copy;Tracing The Lost</Text>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 
