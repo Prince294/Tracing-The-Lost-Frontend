@@ -380,6 +380,7 @@ export default function Signup(props) {
   };
 
   const passwordHandleChange = (el) => {
+    setvalidRePassword(false);
     if (/^(?=.*[0-9])(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,24}$/.test(el)) {
       setvalidPassword(true);
     } else {
@@ -469,7 +470,7 @@ export default function Signup(props) {
                 }, 400)
               }
               color={validUsername ? "green" : "red"}
-              // blurOnSubmit={false}
+            // blurOnSubmit={false}
             />
           </View>
           <View>
@@ -486,7 +487,7 @@ export default function Signup(props) {
               }
               color={validEmail ? "green" : "red"}
               style={{ color: "red" }}
-              // blurOnSubmit={false}
+            // blurOnSubmit={false}
             />
           </View>
           <View>
@@ -498,7 +499,7 @@ export default function Signup(props) {
               ref={textInput2}
               onSubmitEditing={handleUserEmailMobileClick}
               color={validMobile ? "green" : "red"}
-              // blurOnSubmit={false}
+            // blurOnSubmit={false}
             />
           </View>
           <View style={styles.formContNext}>
@@ -794,8 +795,8 @@ function SignupPersonalDetail({
       </View>
       <View style={styles.formContNext}>
         {personalData?.dob !== "" &&
-        personalData?.name?.length > 2 &&
-        personalData?.gender !== "" ? (
+          personalData?.name?.length > 2 &&
+          personalData?.gender !== "" ? (
           <TouchableOpacity onPress={handlePersonalDetailSubmit}>
             <FontAwesome5 name="arrow-circle-right" size={60} color="green" />
           </TouchableOpacity>
@@ -929,8 +930,8 @@ function SignupAadharDetail({
       )}
       <View style={styles.formContNext}>
         {validAadhar &&
-        (!verifiedData?.is_verified_user ||
-          (verifiedData?.is_verified_user && selectedImage)) ? (
+          (!verifiedData?.is_verified_user ||
+            (verifiedData?.is_verified_user && selectedImage)) ? (
           <TouchableOpacity onPress={handleAadharDetailSubmit}>
             <FontAwesome5 name="arrow-circle-right" size={60} color="green" />
           </TouchableOpacity>
