@@ -31,7 +31,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 const { height, width } = Dimensions.get("window");
 export default function HomeContent(props) {
   const { data } = props;
-  const [mapAnimation, setMapAnimation] = useState(0);
+  const [mapAnimation, setMapAnimation] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [errMsg, setErrMsg] = useState("");
@@ -312,11 +312,11 @@ export default function HomeContent(props) {
             style={{ width: "100%", height: "100%" }}
           />
           <Text numberOfLines={1} style={styles.addressText}>
-            {policeStationData[0]?.address}
+            {/* {policeStationData[0]?.address} */}
           </Text>
         </TouchableOpacity>
         <View style={[styles.line, styles.line1]}>
-          <Text style={styles.distance}>{distances[0]}</Text>
+          {/* <Text style={styles.distance}>{distances[0]}</Text> */}
         </View>
         <TouchableOpacity
           onPress={() => {
@@ -331,11 +331,11 @@ export default function HomeContent(props) {
             style={{ width: "100%", height: "100%" }}
           />
           <Text numberOfLines={1} style={styles.addressText}>
-            {policeStationData[3]?.address}
+            {/* {policeStationData[3]?.address} */}
           </Text>
         </TouchableOpacity>
         <View style={[styles.line, styles.line3]}>
-          <Text style={styles.distance}>{distances[3]}</Text>
+          {/* <Text style={styles.distance}>{distances[3]}</Text> */}
         </View>
 
         <TouchableOpacity
@@ -352,11 +352,11 @@ export default function HomeContent(props) {
             onPress={() => setMapAnimation(0)}
           />
           <Text numberOfLines={1} style={styles.addressText}>
-            {policeStationData[4]?.address}
+            {/* {policeStationData[4]?.address} */}
           </Text>
         </TouchableOpacity>
         <View style={[styles.line, styles.line4]}>
-          <Text style={styles.distance}>{distances[4]}</Text>
+          {/* <Text style={styles.distance}>{distances[4]}</Text> */}
         </View>
         <TouchableOpacity
           onPress={() => {
@@ -372,11 +372,11 @@ export default function HomeContent(props) {
             style={{ width: "100%", height: "100%" }}
           />
           <Text numberOfLines={1} style={styles.addressText}>
-            {policeStationData[2]?.address}
+            {/* {policeStationData[2]?.address} */}
           </Text>
         </TouchableOpacity>
         <View style={[styles.line, styles.line2]}>
-          <Text style={styles.distance}>{distances[2]}</Text>
+          {/* <Text style={styles.distance}>{distances[2]}</Text> */}
         </View>
       </Animated.View>
     </>
@@ -386,22 +386,22 @@ export default function HomeContent(props) {
 var pi = Math.PI;
 
 let hyp1 = Math.sqrt(
-  Math.pow(width / 2 - 25 - width / 10, 2) +
+  Math.pow(width / 2 - 65 - width / 10, 2) +
     Math.pow((15 * height) / 100 - 30, 2)
 );
 let width1 =
-  width / 2 - width / 10 - 65 > (15 * height) / 100 - 50
-    ? (15 * height) / 100 - 50
+  width / 2 - width / 10 - 65 < (15 * height) / 100 - 30
+    ? (15 * height) / 100 - 30
     : width / 2 - width / 10 - 65;
 
 let line1Ang = Math.acos(width1 / hyp1);
 line1Ang = 360 - line1Ang * (180 / pi);
 
 let hyp2 = Math.sqrt(
-  Math.pow(width / 2 - 25 - width / 10, 2) +
-    Math.pow((25 * height) / 100 - 30, 2)
+  Math.pow(width / 2 - 65 - width / 10, 2) +
+    Math.pow((25 * height) / 100 - 50, 2)
 );
-let line2Ang = Math.acos((width / 2 - 25 - width / 10) / hyp2);
+let line2Ang = Math.acos((width / 2 - 65 - width / 10) / hyp2);
 line2Ang = line2Ang * (180 / pi);
 
 let hyp3 = Math.sqrt(
@@ -532,8 +532,10 @@ const styles = StyleSheet.create({
   },
   line1: {
     width: hyp1,
-    top: (17.5 * height) / 100 + 25,
-    left: (width / 2 - 25 - width / 10) / 2 + 2,
+    // top: (17.5 * height) / 100 + 35,
+    top: (20 * height) / 100,
+    left: 0,
+    // left: (width / 2 - 25 - width / 10) / 2 + 2,
     transform: [{ rotate: line1Ang + "deg" }],
   },
 
@@ -542,10 +544,10 @@ const styles = StyleSheet.create({
     right: (10 * width) / 100,
   },
   line2: {
-    width: hyp2 - 30,
+    width: hyp2,
     top: (22.5 * height) / 100 + 20,
     right: (width / 2 - width / 10 - 25) / 2 - 30,
-    transform: [{ rotate: line2Ang + 5 + "deg" }],
+    transform: [{ rotate: line2Ang + "deg" }],
   },
   mapPin3: {
     top: (50 * height) / 100,
@@ -555,7 +557,7 @@ const styles = StyleSheet.create({
     width: hyp3 - 30,
     top: (30 * height) / 100 + 20,
     left: (width / 2 - 25 - width / 5) / 2 - 26,
-    transform: [{ rotate: line3Ang - 2 + "deg" }],
+    transform: [{ rotate: line3Ang + "deg" }],
   },
   mapPin4: {
     top: (65 * height) / 100,

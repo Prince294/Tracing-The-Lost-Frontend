@@ -220,6 +220,7 @@ export default function Signup(props) {
         name: "verifiedData.jpg",
         type: "image/jpg",
       });
+      formdata.append("is_verified_user", true);
     }
     http
       .post(apisPath?.user?.userIDVerification, formdata, {
@@ -307,7 +308,7 @@ export default function Signup(props) {
               mobile: "",
               password: "",
             });
-            handleLogout()
+            handleLogout();
           },
         },
       ]
@@ -340,7 +341,7 @@ export default function Signup(props) {
       mobile: "",
       password: "",
     });
-    handleLogout()
+    handleLogout();
     setFormStep(0);
     setLoading(false);
   };
@@ -470,7 +471,7 @@ export default function Signup(props) {
                 }, 400)
               }
               color={validUsername ? "green" : "red"}
-            // blurOnSubmit={false}
+              // blurOnSubmit={false}
             />
           </View>
           <View>
@@ -487,7 +488,7 @@ export default function Signup(props) {
               }
               color={validEmail ? "green" : "red"}
               style={{ color: "red" }}
-            // blurOnSubmit={false}
+              // blurOnSubmit={false}
             />
           </View>
           <View>
@@ -499,7 +500,7 @@ export default function Signup(props) {
               ref={textInput2}
               onSubmitEditing={handleUserEmailMobileClick}
               color={validMobile ? "green" : "red"}
-            // blurOnSubmit={false}
+              // blurOnSubmit={false}
             />
           </View>
           <View style={styles.formContNext}>
@@ -795,8 +796,8 @@ function SignupPersonalDetail({
       </View>
       <View style={styles.formContNext}>
         {personalData?.dob !== "" &&
-          personalData?.name?.length > 2 &&
-          personalData?.gender !== "" ? (
+        personalData?.name?.length > 2 &&
+        personalData?.gender !== "" ? (
           <TouchableOpacity onPress={handlePersonalDetailSubmit}>
             <FontAwesome5 name="arrow-circle-right" size={60} color="green" />
           </TouchableOpacity>
@@ -930,8 +931,8 @@ function SignupAadharDetail({
       )}
       <View style={styles.formContNext}>
         {validAadhar &&
-          (!verifiedData?.is_verified_user ||
-            (verifiedData?.is_verified_user && selectedImage)) ? (
+        (!verifiedData?.is_verified_user ||
+          (verifiedData?.is_verified_user && selectedImage)) ? (
           <TouchableOpacity onPress={handleAadharDetailSubmit}>
             <FontAwesome5 name="arrow-circle-right" size={60} color="green" />
           </TouchableOpacity>
