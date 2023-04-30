@@ -43,8 +43,6 @@ export default function HomeContent(props) {
   const [selectedImage, setSelectedImage] = useState(null);
   const [currentLongitude, setCurrentLongitude] = useState(null);
   const [currentLatitude, setCurrentLatitude] = useState(null);
-  const [selectedPoliceStation, setSelectedPoliceStation] = useState();
-  const [policeStationData, setPoliceStationData] = useState([]);
   const [traceMsg, setTraceMsg] = useState("");
   const [traceTitle, setTraceTitle] = useState("");
   const [progressTime, setProgressTime] = useState(200);
@@ -338,7 +336,7 @@ export default function HomeContent(props) {
       </View>
 
       <Animated.View style={[styles.policeStationList, mapAnimationStyle]}>
-        {mapAnimation === 1 && (
+        {mapAnimation === 1 && region !== null && (
           <MapView
             style={styles.map}
             region={
