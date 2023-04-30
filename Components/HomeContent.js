@@ -342,9 +342,8 @@ export default function HomeContent(props) {
           zoomControlEnabled={true}>
           <Marker coordinate={{ latitude: currentLatitude ? currentLatitude : 37.111, longitude: currentLongitude ? currentLongitude : 50.111 }} title="Your Location" />
           {markers?.map(el => {
-            <Marker key={el?.name} coordinate={el?.coordinates} title={el?.title} />
+            <Marker key={el?.title} coordinate={el?.coordinates} title={el?.title} />
           })}
-
         </MapView>
         <View style={styles.mapBtns}>
           <TouchableOpacity style={styles.mapBtn} onPress={handleZoomIn}>
@@ -354,7 +353,6 @@ export default function HomeContent(props) {
             <Text style={styles.buttonText}>-</Text>
           </TouchableOpacity>
         </View>
-
       </Animated.View>
     </>
   );
