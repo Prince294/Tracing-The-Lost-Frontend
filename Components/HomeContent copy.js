@@ -19,7 +19,6 @@ import http from "./Services/utility";
 import Loading from "../Shared/Loading";
 import Error from "../Shared/Error";
 import * as Location from "expo-location";
-import MapView, { Marker } from 'react-native-maps';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -39,8 +38,8 @@ export default function HomeContent(props) {
   const [traceBtn, setTraceBtn] = useState(false);
   const [progress, setProgress] = useState(0);
   const [selectedImage, setSelectedImage] = useState(null);
-  const [currentLongitude, setCurrentLongitude] = useState(null);
-  const [currentLatitude, setCurrentLatitude] = useState(null);
+  const [currentLongitude, setCurrentLongitude] = useState();
+  const [currentLatitude, setCurrentLatitude] = useState();
   const [distances, setDistances] = useState([]);
   const [selectedPoliceStation, setSelectedPoliceStation] = useState();
   const [policeStationData, setPoliceStationData] = useState([]);
@@ -49,33 +48,6 @@ export default function HomeContent(props) {
   const [progressTime, setProgressTime] = useState(200);
   const [progressDropStep, setProgressDropStep] = useState(1);
   var interval;
-  const [region, setRegion] = useState(null);
-  const [markers, setMarkers] = useState([
-    { title: 'Marker 1', coordinates: { latitude: 37.4215, longitude: -122.0824 } },
-    { title: 'Marker 2', coordinates: { latitude: 37.4209, longitude: -122.0824 } },
-    { title: 'Marker 3', coordinates: { latitude: 37.422, longitude: -122.0814 } },
-  ]);
-
-  useEffect(() => {
-    async function fetchLocation() {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        return;
-      }
-      let location = await Location.getCurrentPositionAsync({});
-      setRegion({
-        latitude: location?.coords?.latitude,
-        longitude: location?.coords?.longitude,
-        latitudeDelta: 0.0922,
-        longitudeDelta: 0.0421,
-      });
-      console.log(location?.coords?.latitude, location?.coords?.longitude)
-      setCurrentLatitude(location?.coords?.latitude);
-      setCurrentLongitude(location?.coords?.longitude);
-    }
-    fetchLocation();
-  }, [])
-
 
   useEffect(() => {
     const backAction = () => {
@@ -267,24 +239,6 @@ export default function HomeContent(props) {
     setError(false);
   };
 
-  const handleZoomIn = () => {
-    const newRegion = {
-      ...region,
-      latitudeDelta: region.latitudeDelta / 2,
-      longitudeDelta: region.longitudeDelta / 2,
-    };
-    setRegion(newRegion);
-  };
-
-  const handleZoomOut = () => {
-    const newRegion = {
-      ...region,
-      latitudeDelta: region.latitudeDelta * 2,
-      longitudeDelta: region.longitudeDelta * 2,
-    };
-    setRegion(newRegion);
-  };
-
   return (
     <>
       <View style={styles.homeContent}>
@@ -332,34 +286,137 @@ export default function HomeContent(props) {
       </View>
 
       <Animated.View style={[styles.policeStationList, mapAnimationStyle]}>
-        <MapView style={styles.map} region={region ? region : {
-          latitude: 28,
-          longitude: 75,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
-
-        }} zoomEnabled={true}
-          zoomControlEnabled={true}>
-          <Marker coordinate={{ latitude: currentLatitude ? currentLatitude : 37.111, longitude: currentLongitude ? currentLongitude : 50.111 }} title="Your Location" />
-          {markers?.map(el => {
-            <Marker key={el?.name} coordinate={el?.coordinates} title={el?.title} />
-          })}
-
-        </MapView>
-        <View style={styles.mapBtns}>
-          <TouchableOpacity style={styles.mapBtn} onPress={handleZoomIn}>
-            <Text style={styles.buttonText}>+</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.mapBtn} onPress={handleZoomOut}>
-            <Text style={styles.buttonText}>-</Text>
-          </TouchableOpacity>
+        <Animated.View style={[styles.map, mapAnimationStyle]}>
+          <Image
+            source={require("../assets/map.jpg")}
+            style={{ width: "100%", height: "100%" }}
+          />
+        </Animated.View>
+        <View style={styles.myLocationView}>
+          <Image
+            source={require("../assets/my_location_pin.png")}
+            style={[styles.mapPin, styles.myLocation]}
+          />
         </View>
 
+        <TouchableOpacity
+          onPress={() => {
+            setSelectedPoliceStation(0);
+            setMapAnimation(0);
+            handleTracingTheLost();
+          }}
+          style={[styles.mapPin, styles.mapPin1]}
+        >
+          <Image
+            source={require("../assets/location_pin.png")}
+            style={{ width: "100%", height: "100%" }}
+          />
+          <Text numberOfLines={1} style={styles.addressText}>
+            {/* {policeStationData[0]?.address} */}
+          </Text>
+        </TouchableOpacity>
+        <View style={[styles.line, styles.line1]}>
+          {/* <Text style={styles.distance}>{distances[0]}</Text> */}
+        </View>
+        <TouchableOpacity
+          onPress={() => {
+            setSelectedPoliceStation(3);
+            setMapAnimation(0);
+            handleTracingTheLost();
+          }}
+          style={[styles.mapPin, styles.mapPin3]}
+        >
+          <Image
+            source={require("../assets/location_pin.png")}
+            style={{ width: "100%", height: "100%" }}
+          />
+          <Text numberOfLines={1} style={styles.addressText}>
+            {/* {policeStationData[3]?.address} */}
+          </Text>
+        </TouchableOpacity>
+        <View style={[styles.line, styles.line3]}>
+          {/* <Text style={styles.distance}>{distances[3]}</Text> */}
+        </View>
+
+        <TouchableOpacity
+          onPress={() => {
+            setSelectedPoliceStation(4);
+            setMapAnimation(0);
+            handleTracingTheLost();
+          }}
+          style={[styles.mapPin, styles.mapPin4]}
+        >
+          <Image
+            source={require("../assets/location_pin.png")}
+            style={{ width: "100%", height: "100%" }}
+            onPress={() => setMapAnimation(0)}
+          />
+          <Text numberOfLines={1} style={styles.addressText}>
+            {/* {policeStationData[4]?.address} */}
+          </Text>
+        </TouchableOpacity>
+        <View style={[styles.line, styles.line4]}>
+          {/* <Text style={styles.distance}>{distances[4]}</Text> */}
+        </View>
+        <TouchableOpacity
+          onPress={() => {
+            setSelectedPoliceStation(2);
+            setMapAnimation(0);
+            handleTracingTheLost();
+          }}
+          style={[styles.mapPin, styles.mapPin2]}
+        >
+          <Image
+            source={require("../assets/location_pin.png")}
+            onPress={() => setMapAnimation(0)}
+            style={{ width: "100%", height: "100%" }}
+          />
+          <Text numberOfLines={1} style={styles.addressText}>
+            {/* {policeStationData[2]?.address} */}
+          </Text>
+        </TouchableOpacity>
+        <View style={[styles.line, styles.line2]}>
+          {/* <Text style={styles.distance}>{distances[2]}</Text> */}
+        </View>
       </Animated.View>
     </>
   );
 }
 
+var pi = Math.PI;
+
+let hyp1 = Math.sqrt(
+  Math.pow(width / 2 - 65 - width / 10, 2) +
+    Math.pow((15 * height) / 100 - 30, 2)
+);
+let width1 =
+  width / 2 - width / 10 - 65 < (15 * height) / 100 - 30
+    ? (15 * height) / 100 - 30
+    : width / 2 - width / 10 - 65;
+
+let line1Ang = Math.acos(width1 / hyp1);
+line1Ang = 360 - line1Ang * (180 / pi);
+
+let hyp2 = Math.sqrt(
+  Math.pow(width / 2 - 65 - width / 10, 2) +
+    Math.pow((25 * height) / 100 - 50, 2)
+);
+let line2Ang = Math.acos((width / 2 - 65 - width / 10) / hyp2);
+line2Ang = line2Ang * (180 / pi);
+
+let hyp3 = Math.sqrt(
+  Math.pow(width / 2 - 25 - width / 5, 2) +
+    Math.pow((40 * height) / 100 - 30, 2)
+);
+let line3Ang = Math.acos((width / 2 - 25 - width / 5) / hyp3);
+line3Ang = 360 - line3Ang * (180 / pi);
+
+let hyp4 = Math.sqrt(
+  Math.pow(width / 2 - 25 - (30 * width) / 100, 2) +
+    Math.pow((55 * height) / 100 - 30, 2)
+);
+let line4Ang = Math.acos((width / 2 - 25 - (30 * width) / 100) / hyp4);
+line4Ang = line4Ang * (180 / pi);
 
 const styles = StyleSheet.create({
   homeContent: {
@@ -430,30 +487,86 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
   },
+  distance: {
+    position: "absolute",
+    color: "lime",
+    fontSize: 15,
+    fontWeight: "900",
+    letterSpacing: 1.2,
+  },
+  addressText: {
+    color: "white",
+  },
   map: {
-    width: "100%",
-    height: '100%'
+    width: width,
+    height: height,
+    opacity: 0.6,
   },
-  mapBtns: {
-
-    backgroundColor: 'white',
-    zIndex: 10000,
-    position: 'absolute',
-    top: 10,
-    left: 10,
-    display: 'flex',
-    justifyContent: 'center',
-  },
-  mapBtn: {
+  mapPin: {
+    position: "absolute",
     width: 40,
-    height: 40,
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderColor: 'black',
-    borderWidth: 1
+    height: 60,
   },
-  buttonText: {
-    fontSize: 30
-  }
+  myLocationView: {
+    position: "absolute",
+    left: 0,
+    top: height / 10,
+    width: width,
+    alignItems: "center",
+  },
+  myLocation: {
+    width: 50,
+    height: 50,
+  },
+  mapPin1: {
+    top: (25 * height) / 100,
+    left: width / 10,
+  },
+  line: {
+    position: "absolute",
+    height: 0,
+    borderBottomColor: "black",
+    borderBottomWidth: 4,
+    borderStyle: "dashed",
+    alignItems: "center",
+  },
+  line1: {
+    width: hyp1,
+    // top: (17.5 * height) / 100 + 35,
+    top: (20 * height) / 100,
+    left: 0,
+    // left: (width / 2 - 25 - width / 10) / 2 + 2,
+    transform: [{ rotate: line1Ang + "deg" }],
+  },
+
+  mapPin2: {
+    top: (35 * height) / 100,
+    right: (10 * width) / 100,
+  },
+  line2: {
+    width: hyp2,
+    top: (22.5 * height) / 100 + 20,
+    right: (width / 2 - width / 10 - 25) / 2 - 30,
+    transform: [{ rotate: line2Ang + "deg" }],
+  },
+  mapPin3: {
+    top: (50 * height) / 100,
+    left: (20 * width) / 100,
+  },
+  line3: {
+    width: hyp3 - 30,
+    top: (30 * height) / 100 + 20,
+    left: (width / 2 - 25 - width / 5) / 2 - 26,
+    transform: [{ rotate: line3Ang + "deg" }],
+  },
+  mapPin4: {
+    top: (65 * height) / 100,
+    right: (30 * width) / 100,
+  },
+  line4: {
+    width: hyp4 - 30,
+    top: (37.5 * height) / 100 + 30,
+    right: (width / 2 - (30 * width) / 100 - 25) / 2 - 40,
+    transform: [{ rotate: line4Ang + "deg" }],
+  },
 });

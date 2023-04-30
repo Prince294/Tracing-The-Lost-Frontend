@@ -8,6 +8,7 @@ import { apisPath } from "./Utils/path";
 import Loading from "./Shared/Loading";
 import { NavigationContainer } from "@react-navigation/native";
 import { StatusBar } from "react-native";
+import * as Updates from 'expo-updates';
 
 export default function App() {
   const [loading, setLoading] = useState(false);
@@ -15,8 +16,17 @@ export default function App() {
   const [landingPage, setLandingPage] = useState(true);
 
   useEffect(() => {
+    checkForUpdates();
     checkSession();
   }, [landingPage]);
+
+  const checkForUpdates = async () => {
+    const { isAvailable } = await Updates.checkForUpdateAsync();
+    if (isAvailable) {
+      await Updates.fetchUpdateAsync();
+      await Updates.reloadAsync();
+    }
+  }
 
   const checkSession = async () => {
     var session;

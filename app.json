@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "frontend",
+    "name": "TTL",
     "slug": "tracing-the-lost",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -11,9 +11,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#757670"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true
     },
