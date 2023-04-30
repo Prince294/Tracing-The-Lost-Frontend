@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, View, SafeAreaView } from "react-native";
+import { StyleSheet, View, SafeAreaView, LogBox } from "react-native";
 import LandingPage from "./Components/LandingPage";
 import Home from "./Components/Home";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -21,10 +21,35 @@ export default function App() {
   }, [landingPage]);
 
   const checkForUpdates = async () => {
-    const { isAvailable } = await Updates.checkForUpdateAsync();
-    if (isAvailable) {
-      await Updates.fetchUpdateAsync();
-      await Updates.reloadAsync();
+    try {
+      const { isAvailable } = await Updates.checkForUpdateAsync();
+      if (isAvailable) {
+        Alert.alert(
+          "Update Available",
+          "Please Update your app to lastest Version",
+          [
+            {
+              text: "Ok",
+              onPress: async () => {
+                await Updates.fetchUpdateAsync();
+              },
+            },
+          ]
+        );
+        Alert.alert(
+          "Update Complete",
+          "Please Restart Your App!",
+          [
+            {
+              text: "Ok",
+              onPress: async () => {
+                await Updates.reloadAsync();
+              },
+            },
+          ]
+        );
+      }
+    } catch (error) {
     }
   }
 

@@ -19,7 +19,7 @@ import http from "./Services/utility";
 import Loading from "../Shared/Loading";
 import Error from "../Shared/Error";
 import * as Location from "expo-location";
-import MapView, { Marker } from 'react-native-maps';
+import MapView, { Marker } from "react-native-maps";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -28,11 +28,13 @@ import Animated, {
   withDelay,
 } from "react-native-reanimated";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import PolicePin from "../assets/police_pin.png";
+import MyLocation from "../assets/location_pin.png";
 
 const { height, width } = Dimensions.get("window");
 export default function HomeContent(props) {
   const { data } = props;
-  const [mapAnimation, setMapAnimation] = useState(1);
+  const [mapAnimation, setMapAnimation] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [errMsg, setErrMsg] = useState("");
@@ -41,7 +43,6 @@ export default function HomeContent(props) {
   const [selectedImage, setSelectedImage] = useState(null);
   const [currentLongitude, setCurrentLongitude] = useState(null);
   const [currentLatitude, setCurrentLatitude] = useState(null);
-  const [distances, setDistances] = useState([]);
   const [selectedPoliceStation, setSelectedPoliceStation] = useState();
   const [policeStationData, setPoliceStationData] = useState([]);
   const [traceMsg, setTraceMsg] = useState("");
@@ -51,15 +52,28 @@ export default function HomeContent(props) {
   var interval;
   const [region, setRegion] = useState(null);
   const [markers, setMarkers] = useState([
-    { title: 'Marker 1', coordinates: { latitude: 37.4215, longitude: -122.0824 } },
-    { title: 'Marker 2', coordinates: { latitude: 37.4209, longitude: -122.0824 } },
-    { title: 'Marker 3', coordinates: { latitude: 37.422, longitude: -122.0814 } },
+    {
+      address: "Marker 1",
+      location: { latitude: 28.7215, longitude: 77.70724 },
+    },
+    {
+      address: "Marker 2",
+      location: { latitude: 28.7409, longitude: 77.70624 },
+    },
+    {
+      address: "Marker 3",
+      location: { latitude: 28.732, longitude: 77.70914 },
+    },
+    {
+      address: "Marker 4",
+      location: { latitude: 28.732, longitude: 77.70914 },
+    },
   ]);
 
   useEffect(() => {
     async function fetchLocation() {
       let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
+      if (status !== "granted") {
         return;
       }
       let location = await Location.getCurrentPositionAsync({});
@@ -69,13 +83,11 @@ export default function HomeContent(props) {
         latitudeDelta: 0.0922,
         longitudeDelta: 0.0421,
       });
-      console.log(location?.coords?.latitude, location?.coords?.longitude)
       setCurrentLatitude(location?.coords?.latitude);
       setCurrentLongitude(location?.coords?.longitude);
     }
     fetchLocation();
-  }, [])
-
+  }, []);
 
   useEffect(() => {
     const backAction = () => {
@@ -84,7 +96,7 @@ export default function HomeContent(props) {
       }
       return true;
     };
-    setCurrentLocation();
+    SetCurrentLocationFunc();
     const backHandler = BackHandler.addEventListener(
       "hardwareBackPress",
       () => {
@@ -126,21 +138,11 @@ export default function HomeContent(props) {
     setLoading(true);
     await http
       .post(apisPath?.user?.findPoliceStations, {
-        user_on: [currentLatitude, currentLongitude],
+        user_on: [currentLongitude, currentLatitude],
       })
-      .then((res) => {
+      .then(async (res) => {
         // console.log(res?.data?.data);
-        var data = res?.data?.data;
-        if (data.length < 2) {
-          setErrMsg(
-            "Server Deals with high amount of traffic, Please Try after some Time."
-          );
-          setError(true);
-          setLoading(false);
-          return;
-        }
-
-        data.sort((a, b) => {
+        var data = await res?.data?.data?.sort((a, b) => {
           const nameA = a?.distance?.toUpperCase();
           const nameB = b?.distance?.toUpperCase();
           if (nameA > nameB) {
@@ -151,13 +153,20 @@ export default function HomeContent(props) {
           }
           return 0;
         });
-        setPoliceStationData(data);
-        for (let i = 0; i < data?.length; i++) {
-          setDistances((prev) => [...prev, data[i]?.distance]);
+        if (data?.length < 2) {
+          setErrMsg(
+            "Server Deals with high amount of traffic, Please Try after some Time."
+          );
+          setError(true);
+          setLoading(false);
+          return;
         }
+
+        console.log(data)
+        setMarkers(data);
         setMapAnimation(1);
         setTimeout(() => {
-          ToastAndroid.show(
+          ToastAndroid?.show(
             "Select any Pin Point Location",
             ToastAndroid.LONG,
             ToastAndroid.BOTTOM
@@ -173,17 +182,14 @@ export default function HomeContent(props) {
       });
   };
 
-  const handleTracingTheLost = async () => {
+  const handleTracingTheLost = async (id) => {
     setTimeout(() => {
       setTraceBtn(true);
     }, 1300);
     let session = await AsyncStorage.getItem("session");
     var formdata = new FormData();
     formdata.append("session", session);
-    formdata.append(
-      "police_station_id",
-      policeStationData[selectedPoliceStation]?.station_id
-    );
+    formdata.append("police_station_id", id);
     formdata.append("case_image", {
       uri: selectedImage,
       name: "caseImage.jpg",
@@ -221,7 +227,7 @@ export default function HomeContent(props) {
       });
   };
 
-  const setCurrentLocation = async (type = false) => {
+  const SetCurrentLocationFunc = async (type = false) => {
     const foregroundPermission =
       await Location.requestForegroundPermissionsAsync();
     if (foregroundPermission?.granted) {
@@ -242,14 +248,14 @@ export default function HomeContent(props) {
   };
 
   const handleTrace = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      // let result = await ImagePicker.launchCameraAsync({
+    // let result = await ImagePicker.launchImageLibraryAsync({
+    let result = await ImagePicker.launchCameraAsync({
       allowsEditing: true,
       quality: 1,
     });
     if (!result?.canceled) {
       setSelectedImage(result?.assets[0]?.uri);
-      setCurrentLocation(true);
+      SetCurrentLocationFunc(true);
     }
   };
 
@@ -332,19 +338,53 @@ export default function HomeContent(props) {
       </View>
 
       <Animated.View style={[styles.policeStationList, mapAnimationStyle]}>
-        <MapView style={styles.map} region={region ? region : {
-          latitude: 28,
-          longitude: 75,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
+        {mapAnimation === 1 && (
+          <MapView
+            style={styles.map}
+            region={
+              region
+                ? region
+                : {
+                  latitude: 28.721,
+                  longitude: 77.707,
+                  latitudeDelta: 0.0922,
+                  longitudeDelta: 0.0421,
+                }
+            }
+            zoomEnabled={true}
+            zoomControlEnabled={true}
+          >
+            <Marker
+              coordinate={{
+                latitude: currentLatitude ? currentLatitude : 37.111,
+                longitude: currentLongitude ? currentLongitude : 50.111,
+              }}
+              title="Your Location"
+            >
+              <Image source={MyLocation} style={{ width: 20, height: 30 }} />
+            </Marker>
 
-        }} zoomEnabled={true}
-          zoomControlEnabled={true}>
-          <Marker coordinate={{ latitude: currentLatitude ? currentLatitude : 37.111, longitude: currentLongitude ? currentLongitude : 50.111 }} title="Your Location" />
-          {markers?.map(el => {
-            <Marker key={el?.title} coordinate={el?.coordinates} title={el?.title} />
-          })}
-        </MapView>
+            {/* police station markers  */}
+            {markers?.map((marker) => {
+              return (
+                <Marker
+                  key={marker?.address}
+                  coordinate={{
+                    latitude: marker?.location?.latitude,
+                    longitude: marker?.location?.longitude,
+                  }}
+                  title={marker?.address}
+                  onPress={() => {
+                    setMapAnimation(0);
+                    handleTracingTheLost(marker?.station_id);
+                  }}
+                >
+                  <Image source={PolicePin} style={styles.stationPin} />
+                </Marker>
+              );
+            })}
+          </MapView>
+        )}
         <View style={styles.mapBtns}>
           <TouchableOpacity style={styles.mapBtn} onPress={handleZoomIn}>
             <Text style={styles.buttonText}>+</Text>
@@ -357,7 +397,6 @@ export default function HomeContent(props) {
     </>
   );
 }
-
 
 const styles = StyleSheet.create({
   homeContent: {
@@ -430,28 +469,31 @@ const styles = StyleSheet.create({
   },
   map: {
     width: "100%",
-    height: '100%'
+    height: "100%",
   },
   mapBtns: {
-
-    backgroundColor: 'white',
+    backgroundColor: "white",
     zIndex: 10000,
-    position: 'absolute',
+    position: "absolute",
     top: 10,
     left: 10,
-    display: 'flex',
-    justifyContent: 'center',
+    display: "flex",
+    justifyContent: "center",
   },
   mapBtn: {
     width: 40,
     height: 40,
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderColor: 'black',
-    borderWidth: 1
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    borderColor: "black",
+    borderWidth: 1,
   },
   buttonText: {
-    fontSize: 30
-  }
+    fontSize: 30,
+  },
+  stationPin: {
+    width: 25,
+    height: 25,
+  },
 });
