@@ -66,6 +66,7 @@ export default function HomeContent(props) {
   ]);
 
   useEffect(() => {
+    HandlePoliceStation();
     async function fetchLocation() {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
@@ -129,7 +130,7 @@ export default function HomeContent(props) {
     return () => clearTimeout(interval);
   }, [traceBtn, progress]);
 
-  const HandlePoliceStation = async () => {
+  const HandlePoliceStation = async (mapOpen = false) => {
     setLoading(true);
     await http
       .post(apisPath?.user?.findPoliceStations, {
@@ -148,25 +149,29 @@ export default function HomeContent(props) {
           }
           return 0;
         });
-        if (data?.length < 2) {
-          setErrMsg(
-            "Server Deals with high amount of traffic, Please Try after some Time."
-          );
-          setError(true);
-          setLoading(false);
-          return;
+
+        setMarkers(data);
+
+        if (mapOpen) {
+
+          if (data?.length < 2) {
+            setErrMsg(
+              "Server Deals with high amount of traffic, Please Try after some Time."
+            );
+            setError(true);
+            setLoading(false);
+            return;
+          }
+          setMapAnimation(1);
+          setTimeout(() => {
+            ToastAndroid?.show(
+              "Select any Pin Point Location",
+              ToastAndroid.LONG,
+              ToastAndroid.BOTTOM
+            );
+          }, 1000);
         }
 
-        console.log(data)
-        setMarkers(data);
-        setMapAnimation(1);
-        setTimeout(() => {
-          ToastAndroid?.show(
-            "Select any Pin Point Location",
-            ToastAndroid.LONG,
-            ToastAndroid.BOTTOM
-          );
-        }, 1000);
         setLoading(false);
       })
       .catch((err) => {
@@ -223,22 +228,18 @@ export default function HomeContent(props) {
   };
 
   const SetCurrentLocationFunc = async (type = false) => {
-    const foregroundPermission =
-      await Location?.requestForegroundPermissionsAsync();
-    if (foregroundPermission?.granted) {
-      foregroundSubscrition = await Location?.watchPositionAsync(
-        {
-          accuracy: Location?.Accuracy?.High,
-          distanceInterval: 10,
-        },
-        (location) => {
-          setCurrentLatitude(location?.coords?.latitude);
-          setCurrentLongitude(location?.coords?.longitude);
-        }
-      );
-      if (type) {
-        HandlePoliceStation();
+    foregroundSubscrition = await Location?.watchPositionAsync(
+      {
+        accuracy: Location?.Accuracy?.High,
+        distanceInterval: 10,
+      },
+      (location) => {
+        setCurrentLatitude(location?.coords?.latitude);
+        setCurrentLongitude(location?.coords?.longitude);
       }
+    );
+    if (type) {
+      HandlePoliceStation(true);
     }
   };
 
