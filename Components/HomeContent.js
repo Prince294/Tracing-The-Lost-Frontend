@@ -4,11 +4,9 @@ import {
   BackHandler,
   Dimensions,
   Image,
-  PermissionsAndroid,
   StyleSheet,
   Text,
   ToastAndroid,
-  TouchableHighlight,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -21,7 +19,6 @@ import Error from "../Shared/Error";
 import * as Location from "expo-location";
 import MapView, { Marker } from "react-native-maps";
 import Animated, {
-  useSharedValue,
   useAnimatedStyle,
   interpolate,
   withTiming,
@@ -227,11 +224,11 @@ export default function HomeContent(props) {
 
   const SetCurrentLocationFunc = async (type = false) => {
     const foregroundPermission =
-      await Location.requestForegroundPermissionsAsync();
+      await Location?.requestForegroundPermissionsAsync();
     if (foregroundPermission?.granted) {
-      foregroundSubscrition = await Location.watchPositionAsync(
+      foregroundSubscrition = await Location?.watchPositionAsync(
         {
-          accuracy: Location.Accuracy.High,
+          accuracy: Location?.Accuracy?.High,
           distanceInterval: 10,
         },
         (location) => {
@@ -247,7 +244,7 @@ export default function HomeContent(props) {
 
   const handleTrace = async () => {
     // let result = await ImagePicker.launchImageLibraryAsync({
-    let result = await ImagePicker.launchCameraAsync({
+    let result = await ImagePicker?.launchCameraAsync({
       allowsEditing: true,
       quality: 1,
     });
