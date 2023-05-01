@@ -1,13 +1,55 @@
-import { Dimensions, Image, StyleSheet, Text, View } from "react-native";
+import { Dimensions, Image, StyleSheet, Text, ToastAndroid, View } from "react-native";
 import React from "react";
 import { Divider, IconButton, ListItem } from "@react-native-material/core";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 import { Ionicons, AntDesign } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native";
+import { Button } from "react-native-paper";
 
 const { height, width } = Dimensions.get("window");
 export default function SideBar(props) {
   const { data } = props;
+
+  const checkForUpdate = async () => {
+    try {
+      const { isAvailable } = await Updates.checkForUpdateAsync();
+      if (isAvailable) {
+        Alert.alert(
+          "Update Available",
+          "Please Update your app to lastest Version",
+          [
+            {
+              text: "Ok",
+              onPress: async () => {
+                await Updates.fetchUpdateAsync();
+              },
+            },
+          ]
+        );
+        Alert.alert(
+          "Update Complete",
+          "Please Restart Your App!",
+          [
+            {
+              text: "Ok",
+              onPress: async () => {
+                await Updates.reloadAsync();
+              },
+            },
+          ]
+        );
+      }
+      else {
+        ToastAndroid?.show(
+          "No Update Available",
+          ToastAndroid.LONG,
+          ToastAndroid.BOTTOM
+        );
+      }
+    } catch (error) {
+    }
+  }
+
   return (
     <SafeAreaView style={styles.sidebar}>
       <View style={{ position: "absolute", right: 10, zIndex: 1 }}>
@@ -83,6 +125,7 @@ export default function SideBar(props) {
         />
       </View>
       <View style={styles.bottamText}>
+        <Button onPress={checkForUpdate} style={{ marginBottom: 10 }}>Check For Update</Button>
         <Text>v1.0 &copy;Tracing The Lost</Text>
       </View>
     </SafeAreaView>

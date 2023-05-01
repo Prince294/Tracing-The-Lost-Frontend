@@ -57,7 +57,7 @@ export default function HomeContent(props) {
     },
     {
       address: "Marker 3",
-      location: { latitude: 28.732, longitude: 77.70914 },
+      location: { latitude: 28.732, longitude: 77.71114 },
     },
     {
       address: "Marker 4",
