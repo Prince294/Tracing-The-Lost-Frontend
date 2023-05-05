@@ -168,7 +168,7 @@ export default function HomeContent(props) {
       })
       .catch((err) => {
         if (mapOpen) {
-          console.log("police error", err);
+          // console.log("police error", err);
           setErrMsg(err?.response?.data?.message);
           setError(true);
         }
@@ -200,7 +200,7 @@ export default function HomeContent(props) {
         headers: { "Content-Type": "multipart/form-data" },
       })
       .then((res) => {
-        console.log(res?.data?.data);
+        // console.log(res?.data?.data);
         setTraceTitle("Details Found!");
         setTraceMsg(
           "Suspect details are send to your police station, Thanks for helping"

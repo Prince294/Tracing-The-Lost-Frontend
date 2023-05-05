@@ -9,7 +9,7 @@
     "splash": {
       "image": "./assets/app-icon1.png",
       "resizeMode": "contain",
-      "backgroundColor": "white"
+      "backgroundColor": "#ffffff"
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
@@ -23,7 +23,7 @@
       },
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "white"
+        "backgroundColor": "#ffffff"
       },
       "package": "com.reflex1408.tracingthelost"
     },
@@ -41,7 +41,7 @@
     "updates": {
       "channel": "default",
       "enabled": true,
-      "fallbackToCacheTimeout": 0,
+      "fallbackToCacheTimeout": 10000,
       "url": "https://u.expo.dev/58198649-706b-4dd6-b5ce-144bfffb9af7"
     }
   }
