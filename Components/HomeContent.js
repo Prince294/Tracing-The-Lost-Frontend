@@ -40,9 +40,9 @@ export default function HomeContent(props) {
   const [selectedImage, setSelectedImage] = useState(null);
   const [currentLongitude, setCurrentLongitude] = useState(null);
   const [currentLatitude, setCurrentLatitude] = useState(null);
-  const [traceMsg, setTraceMsg] = useState("");
   const [traceTitle, setTraceTitle] = useState("");
-  const [progressTime, setProgressTime] = useState(200);
+  const [traceMsg, setTraceMsg] = useState("");
+  const [progressTime, setProgressTime] = useState(500);
   const [progressDropStep, setProgressDropStep] = useState(1);
   var interval;
   const [region, setRegion] = useState(null);
@@ -207,6 +207,9 @@ export default function HomeContent(props) {
           "Suspect details are send to your police station, Thanks for helping"
         );
         // setMapAnimation(0);
+        setSelectedImage(null);
+
+
         setTimeout(() => {
           setProgressDropStep(5);
           setProgressTime(20);
@@ -326,7 +329,7 @@ export default function HomeContent(props) {
             </TouchableOpacity>
           )}
           <TouchableOpacity style={styles.btn} onPress={handleTrace}>
-            <Text style={{ fontSize: 16 }}>Trace The Lost</Text>
+            <Text style={{ fontSize: 16 }}>Trace The Person</Text>
           </TouchableOpacity>
         </View>
         {loading && <Loading />}

@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, View, SafeAreaView, LogBox } from "react-native";
+import { StyleSheet, SafeAreaView } from "react-native";
 import LandingPage from "./Components/LandingPage";
 import Home from "./Components/Home";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import http from "./Components/Services/utility";
 import { apisPath } from "./Utils/path";
 import Loading from "./Shared/Loading";
-import { NavigationContainer } from "@react-navigation/native";
 import { StatusBar } from "react-native";
 import * as Updates from 'expo-updates';
 
