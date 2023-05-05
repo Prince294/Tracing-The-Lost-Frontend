@@ -7,9 +7,9 @@
     "icon": "./assets/app-icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/app-icon.png",
+      "image": "./assets/app-icon1.png",
       "resizeMode": "contain",
-      "backgroundColor": "#757670"
+      "backgroundColor": "white"
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
@@ -23,7 +23,7 @@
       },
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#757670"
+        "backgroundColor": "white"
       },
       "package": "com.reflex1408.tracingthelost"
     },

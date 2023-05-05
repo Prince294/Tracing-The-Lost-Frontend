@@ -4,6 +4,7 @@ import {
   BackHandler,
   Dimensions,
   Image,
+  SafeAreaView,
   StyleSheet,
   Text,
   ToastAndroid,
@@ -42,48 +43,23 @@ export default function HomeContent(props) {
   const [currentLatitude, setCurrentLatitude] = useState(null);
   const [traceTitle, setTraceTitle] = useState("");
   const [traceMsg, setTraceMsg] = useState("");
-  const [progressTime, setProgressTime] = useState(500);
+  const [progressTime, setProgressTime] = useState(1400);
   const [progressDropStep, setProgressDropStep] = useState(1);
   var interval;
   const [region, setRegion] = useState(null);
-  const [markers, setMarkers] = useState([
-    {
-      address: "Marker 1",
-      location: { latitude: 28.7215, longitude: 77.70724 },
-    },
-    {
-      address: "Marker 2",
-      location: { latitude: 28.7409, longitude: 77.70624 },
-    },
-    {
-      address: "Marker 3",
-      location: { latitude: 28.732, longitude: 77.71114 },
-    },
-    {
-      address: "Marker 4",
-      location: { latitude: 28.732, longitude: 77.70914 },
-    },
-  ]);
+  const [markers, setMarkers] = useState(null);
+
 
   useEffect(() => {
-    HandlePoliceStation();
-    async function fetchLocation() {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        return;
-      }
-      let location = await Location.getCurrentPositionAsync({});
-      setRegion({
-        latitude: location?.coords?.latitude,
-        longitude: location?.coords?.longitude,
-        latitudeDelta: 0.0922,
-        longitudeDelta: 0.0421,
-      });
-      setCurrentLatitude(location?.coords?.latitude);
-      setCurrentLongitude(location?.coords?.longitude);
-    }
     fetchLocation();
   }, []);
+
+  useEffect(() => {
+    if (currentLatitude && currentLongitude) {
+      HandlePoliceStation();
+    }
+  }, [currentLongitude, currentLatitude])
+
 
   useEffect(() => {
     const backAction = () => {
@@ -118,6 +94,7 @@ export default function HomeContent(props) {
     if (progress >= 100) {
       setTraceBtn(false);
       setProgress(0);
+      setProgressTime(1400);
 
       Alert.alert(traceTitle, traceMsg, [
         {
@@ -129,6 +106,22 @@ export default function HomeContent(props) {
     }
     return () => clearTimeout(interval);
   }, [traceBtn, progress]);
+
+  async function fetchLocation() {
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== "granted") {
+      return;
+    }
+    let location = await Location.getCurrentPositionAsync({});
+    setRegion({
+      latitude: location?.coords?.latitude,
+      longitude: location?.coords?.longitude,
+      latitudeDelta: 0.0922,
+      longitudeDelta: 0.0421,
+    });
+    setCurrentLatitude(location?.coords?.latitude);
+    setCurrentLongitude(location?.coords?.longitude);
+  }
 
   const HandlePoliceStation = async (mapOpen = false) => {
     setLoading(true);
@@ -153,7 +146,6 @@ export default function HomeContent(props) {
         setMarkers(data);
 
         if (mapOpen) {
-
           if (data?.length < 2) {
             setErrMsg(
               "Server Deals with high amount of traffic, Please Try after some Time."
@@ -175,14 +167,19 @@ export default function HomeContent(props) {
         setLoading(false);
       })
       .catch((err) => {
-        // console.log("police error", err);
-        setErrMsg(err?.response?.data?.message);
-        setError(true);
+        if (mapOpen) {
+          console.log("police error", err);
+          setErrMsg(err?.response?.data?.message);
+          setError(true);
+        }
         setLoading(false);
       });
   };
 
   const handleTracingTheLost = async (id) => {
+    if (!selectedImage) {
+      return;
+    }
     setTimeout(() => {
       setTraceBtn(true);
     }, 1300);
@@ -190,11 +187,13 @@ export default function HomeContent(props) {
     var formdata = new FormData();
     formdata.append("session", session);
     formdata.append("police_station_id", id);
+
     formdata.append("case_image", {
       uri: selectedImage,
       name: "caseImage.jpg",
       type: "image/jpg",
     });
+
 
     http
       .post(apisPath?.user?.tracingTheLost, formdata, {
@@ -216,14 +215,15 @@ export default function HomeContent(props) {
         }, 1500);
       })
       .catch((err) => {
+        setSelectedImage(null);
         setTraceTitle("Details Not Found!");
         setTraceMsg(
           "We are working on it, Please be patience, We'll notify you Once we found the Details."
         );
         setMapAnimation(0);
-        if (err?.response?.data?.message !== "Data Not Found") {
-          setTraceBtn(false);
-          setProgress(0);
+        setProgress(100);
+        setTraceBtn(false);
+        if (err?.response?.data?.message !== "Data Not Found" && err?.response?.data?.message !== "") {
           setErrMsg(err?.response?.data?.message);
           setError(true);
         }
@@ -329,15 +329,15 @@ export default function HomeContent(props) {
             </TouchableOpacity>
           )}
           <TouchableOpacity style={styles.btn} onPress={handleTrace}>
-            <Text style={{ fontSize: 16 }}>Trace The Person</Text>
+            <Text style={{ fontSize: 16 }}>Trace The Lost</Text>
           </TouchableOpacity>
         </View>
         {loading && <Loading />}
         {error && <Error message={errMsg} errorClose={handleErrorButton} />}
       </View>
 
-      <Animated.View style={[styles.policeStationList, mapAnimationStyle]}>
-        {mapAnimation === 1 && region !== null && (
+      {region !== null && (
+        <Animated.View style={[styles.policeStationList, mapAnimationStyle]}>
           <MapView
             style={styles.map}
             region={
@@ -353,46 +353,42 @@ export default function HomeContent(props) {
             zoomEnabled={true}
             zoomControlEnabled={true}
           >
-            <Marker
-              coordinate={{
-                latitude: currentLatitude ? currentLatitude : 37.111,
-                longitude: currentLongitude ? currentLongitude : 50.111,
-              }}
-              title="Your Location"
-            >
-              <Image source={MyLocation} style={{ width: 20, height: 30 }} />
-            </Marker>
-
-            {/* police station markers  */}
-            {markers?.map((marker) => {
-              return (
+            {markers !== null &&
+              <>
                 <Marker
-                  key={marker?.address}
                   coordinate={{
-                    latitude: marker?.location?.latitude,
-                    longitude: marker?.location?.longitude,
+                    latitude: currentLatitude ? currentLatitude : 37.111,
+                    longitude: currentLongitude ? currentLongitude : 50.111,
                   }}
-                  title={marker?.address}
-                  onPress={() => {
-                    setMapAnimation(0);
-                    handleTracingTheLost(marker?.station_id);
-                  }}
+                  title="Your Location"
                 >
-                  <Image source={PolicePin} style={styles.stationPin} />
+                  <Image source={MyLocation} style={{ width: 20, height: 30 }} />
                 </Marker>
-              );
-            })}
+
+                {/* police station markers  */}
+                {markers?.map((marker) => {
+                  return (
+                    <Marker
+                      key={marker?.address}
+                      coordinate={{
+                        latitude: marker?.location?.latitude,
+                        longitude: marker?.location?.longitude,
+                      }}
+                      title={marker?.address}
+                      onPress={() => {
+                        setMapAnimation(0);
+                        handleTracingTheLost(marker?.station_id);
+                      }}
+                    >
+                      <Image source={PolicePin} style={styles.stationPin} />
+                    </Marker>
+                  );
+                })}
+              </>
+            }
           </MapView>
-        )}
-        <View style={styles.mapBtns}>
-          <TouchableOpacity style={styles.mapBtn} onPress={handleZoomIn}>
-            <Text style={styles.buttonText}>+</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.mapBtn} onPress={handleZoomOut}>
-            <Text style={styles.buttonText}>-</Text>
-          </TouchableOpacity>
-        </View>
-      </Animated.View>
+        </Animated.View>
+      )}
     </>
   );
 }
@@ -452,8 +448,8 @@ const styles = StyleSheet.create({
   },
   btn: {
     paddingHorizontal: 40,
-    paddingVertical: 50,
-    backgroundColor: "white",
+    paddingVertical: 30,
+    backgroundColor: "rgb(220,220,220)",
     borderRadius: 10,
   },
   policeStationList: {
@@ -467,32 +463,12 @@ const styles = StyleSheet.create({
     left: 0,
   },
   map: {
-    width: "100%",
-    height: "100%",
+    width: width,
+    height: height - 60,
   },
-  mapBtns: {
-    backgroundColor: "white",
-    zIndex: 10000,
-    position: "absolute",
-    top: 10,
-    left: 10,
-    display: "flex",
-    justifyContent: "center",
-  },
-  mapBtn: {
-    width: 40,
-    height: 40,
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    borderColor: "black",
-    borderWidth: 1,
-  },
-  buttonText: {
-    fontSize: 30,
-  },
+
   stationPin: {
-    width: 25,
-    height: 25,
+    width: 27,
+    height: 26,
   },
 });
