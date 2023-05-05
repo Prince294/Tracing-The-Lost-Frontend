@@ -4,7 +4,6 @@ import {
   BackHandler,
   Dimensions,
   Image,
-  SafeAreaView,
   StyleSheet,
   Text,
   ToastAndroid,
@@ -247,6 +246,10 @@ export default function HomeContent(props) {
   };
 
   const handleTrace = async () => {
+    const permissionResult = await ImagePicker?.requestCameraPermissionsAsync();
+    if (!permissionResult.granted) {
+      return;
+    }
     // let result = await ImagePicker.launchImageLibraryAsync({
     let result = await ImagePicker?.launchCameraAsync({
       allowsEditing: true,
@@ -270,24 +273,6 @@ export default function HomeContent(props) {
 
   const handleErrorButton = () => {
     setError(false);
-  };
-
-  const handleZoomIn = () => {
-    const newRegion = {
-      ...region,
-      latitudeDelta: region.latitudeDelta / 2,
-      longitudeDelta: region.longitudeDelta / 2,
-    };
-    setRegion(newRegion);
-  };
-
-  const handleZoomOut = () => {
-    const newRegion = {
-      ...region,
-      latitudeDelta: region.latitudeDelta * 2,
-      longitudeDelta: region.longitudeDelta * 2,
-    };
-    setRegion(newRegion);
   };
 
   return (
