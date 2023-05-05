@@ -49,38 +49,56 @@ export default function History() {
       });
   };
 
+  // const SortSuccess = () => {
+  //   var obj = [...data];
+  //   obj.sort((a, b) => {
+  //     const nameA = a?.tracking_progress?.toUpperCase();
+  //     const nameB = b?.tracking_progress?.toUpperCase();
+  //     if (nameA > nameB) {
+  //       return -1;
+  //     }
+  //     if (nameA < nameB) {
+  //       return 1;
+  //     }
+  //     return 0;
+  //   });
+  //   setData(obj);
+  // };
   const SortSuccess = () => {
     var obj = [...data];
-    obj.sort((a, b) => {
-      const nameA = a?.tracking_progress?.toUpperCase();
-      const nameB = b?.tracking_progress?.toUpperCase();
-      if (nameA > nameB) {
+    obj.sort((a) => {
+      const nameA = a?.tracking_progress?.toLowerCase();
+      if (nameA === 'success') {
         return -1;
       }
-      if (nameA < nameB) {
-        return 1;
-      }
-      return 0;
+      return 1;
     });
     setData(obj);
   };
 
   const SortPending = () => {
     var obj = [...data];
-    obj.sort((a, b) => {
-      const nameA = a?.tracking_progress?.toUpperCase();
-      const nameB = b?.tracking_progress?.toUpperCase();
-      if (nameA > nameB) {
-        return 1;
-      }
-      if (nameA < nameB) {
+    obj.sort((a) => {
+      const nameA = a?.tracking_progress?.toLowerCase();
+      if (nameA === 'pending') {
         return -1;
       }
-      return 0;
+      return 1;
     });
     setData(obj);
   };
 
+  const SortAtPoliceStation = () => {
+    var obj = [...data];
+    obj.sort((a) => {
+      const nameA = a?.tracking_progress?.toLowerCase();
+      if (nameA === 'at police station') {
+        return -1;
+      }
+      return 1;
+    });
+    setData(obj);
+  };
   const handleErrorClick = () => {
     setError(false);
   };
@@ -91,6 +109,15 @@ export default function History() {
         <View style={styles.header}>
           <Text style={{ fontSize: 16 }}>Filter:</Text>
           <TouchableOpacity
+            onPress={SortAtPoliceStation}
+            style={[
+              styles.progressType,
+              { backgroundColor: " rgba(255,100,0,0.5)", marginTop: 0 },
+            ]}
+          >
+            <Text>At Police Station</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
             onPress={SortSuccess}
             style={[
               styles.progressType,
@@ -100,7 +127,7 @@ export default function History() {
               },
             ]}
           >
-            <Text>Success</Text>
+            <Text >Success</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={SortPending}
@@ -109,7 +136,7 @@ export default function History() {
               { backgroundColor: "rgba(255,0,0,0.5)", marginTop: 0 },
             ]}
           >
-            <Text style={{ color: "white" }}>Pending</Text>
+            <Text>Pending</Text>
           </TouchableOpacity>
         </View>
         {data?.length > 0 ? (
@@ -156,17 +183,12 @@ const ListItems = ({ listData }) => {
             {
               backgroundColor:
                 listData?.tracking_progress === "Pending"
-                  ? "rgba(255,0,0,0.5)"
-                  : "rgba(0,255,0,0.5)",
+                  ? "rgba(255,0,0,0.5)" : listData?.tracking_progress === "Success"
+                    ? "rgba(0,255,0,0.5)" : 'rgba(255,100,0,0.5)',
             },
           ]}
         >
-          <Text
-            style={{
-              color:
-                listData?.tracking_progress === "Pending" ? "white" : "black",
-            }}
-          >
+          <Text>
             {listData?.tracking_progress}
           </Text>
         </View>
@@ -189,7 +211,7 @@ const styles = StyleSheet.create({
   header: {
     width: width,
     flexDirection: "row",
-    columnGap: 16,
+    columnGap: 8,
     paddingVertical: 10,
     paddingHorizontal: 16,
     alignItems: "center",

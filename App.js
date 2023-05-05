@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, View, SafeAreaView } from "react-native";
+import { StyleSheet, SafeAreaView } from "react-native";
 import LandingPage from "./Components/LandingPage";
 import Home from "./Components/Home";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import http from "./Components/Services/utility";
 import { apisPath } from "./Utils/path";
 import Loading from "./Shared/Loading";
-import { NavigationContainer } from "@react-navigation/native";
 import { StatusBar } from "react-native";
+import * as Updates from 'expo-updates';
 
 export default function App() {
   const [loading, setLoading] = useState(false);
@@ -15,8 +15,42 @@ export default function App() {
   const [landingPage, setLandingPage] = useState(true);
 
   useEffect(() => {
+    checkForUpdates();
     checkSession();
   }, [landingPage]);
+
+  const checkForUpdates = async () => {
+    try {
+      const { isAvailable } = await Updates.checkForUpdateAsync();
+      if (isAvailable) {
+        Alert.alert(
+          "Update Available",
+          "Please Update your app to lastest Version",
+          [
+            {
+              text: "Ok",
+              onPress: async () => {
+                await Updates.fetchUpdateAsync();
+              },
+            },
+          ]
+        );
+        Alert.alert(
+          "Update Complete",
+          "Please Restart Your App!",
+          [
+            {
+              text: "Ok",
+              onPress: async () => {
+                await Updates.reloadAsync();
+              },
+            },
+          ]
+        );
+      }
+    } catch (error) {
+    }
+  }
 
   const checkSession = async () => {
     var session;

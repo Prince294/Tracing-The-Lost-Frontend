@@ -1,26 +1,29 @@
 {
   "expo": {
-    "name": "frontend",
+    "name": "TTL",
     "slug": "tracing-the-lost",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/app-icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/app-icon.png",
+      "image": "./assets/app-icon1.png",
       "resizeMode": "contain",
-      "backgroundColor": "#757670"
+      "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true
     },
     "android": {
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyCifPRIfBChOamOeSEy-zGoAA6Yp0aHXWk"
+        }
+      },
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#757670"
+        "backgroundColor": "#ffffff"
       },
       "package": "com.reflex1408.tracingthelost"
     },
@@ -36,6 +39,9 @@
       "policy": "sdkVersion"
     },
     "updates": {
+      "channel": "default",
+      "enabled": true,
+      "fallbackToCacheTimeout": 0,
       "url": "https://u.expo.dev/58198649-706b-4dd6-b5ce-144bfffb9af7"
     }
   }

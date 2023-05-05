@@ -220,6 +220,7 @@ export default function Signup(props) {
         name: "verifiedData.jpg",
         type: "image/jpg",
       });
+      formdata.append("is_verified_user", true);
     }
     http
       .post(apisPath?.user?.userIDVerification, formdata, {
@@ -307,7 +308,7 @@ export default function Signup(props) {
               mobile: "",
               password: "",
             });
-            handleLogout()
+            handleLogout();
           },
         },
       ]
@@ -340,7 +341,7 @@ export default function Signup(props) {
       mobile: "",
       password: "",
     });
-    handleLogout()
+    handleLogout();
     setFormStep(0);
     setLoading(false);
   };
@@ -380,6 +381,7 @@ export default function Signup(props) {
   };
 
   const passwordHandleChange = (el) => {
+    setvalidRePassword(false);
     if (/^(?=.*[0-9])(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,24}$/.test(el)) {
       setvalidPassword(true);
     } else {
