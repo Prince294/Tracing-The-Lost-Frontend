@@ -50,11 +50,12 @@ export default function HomeContent(props) {
 
 
   useEffect(() => {
-    fetchLocation();
+    checkLocation();
+
   }, []);
 
   useEffect(() => {
-    if (currentLatitude && currentLongitude) {
+    if (currentLatitude !== null && currentLongitude !== null && !markers) {
       HandlePoliceStation();
     }
   }, [currentLongitude, currentLatitude])
@@ -106,11 +107,24 @@ export default function HomeContent(props) {
     return () => clearTimeout(interval);
   }, [traceBtn, progress]);
 
+  const checkLocation = async () => {
+    if (!region) {
+      await fetchLocation();
+    }
+  }
+
   async function fetchLocation() {
-    let { status } = await Location.requestForegroundPermissionsAsync();
+    console.log()
+    const status = await new Promise(async (resolve, reject) => {
+      if (!(await Location.getForegroundPermissionsAsync()).granted) {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        resolve(status)
+      }
+    })
     if (status !== "granted") {
       return;
     }
+    await Location.requestBackgroundPermissionsAsync();
     let location = await Location.getCurrentPositionAsync({});
     setRegion({
       latitude: location?.coords?.latitude,
@@ -207,11 +221,11 @@ export default function HomeContent(props) {
         // setMapAnimation(0);
         setSelectedImage(null);
 
-
         setTimeout(() => {
           setProgressDropStep(5);
           setProgressTime(20);
         }, 1500);
+
       })
       .catch((err) => {
         setSelectedImage(null);
@@ -222,7 +236,7 @@ export default function HomeContent(props) {
         setMapAnimation(0);
         setProgress(100);
         setTraceBtn(false);
-        if (err?.response?.data?.message !== "Data Not Found" && err?.response?.data?.message !== "") {
+        if (err?.response?.data?.message !== "Data Not Found" && err?.response?.data?.message) {
           setErrMsg(err?.response?.data?.message);
           setError(true);
         }
@@ -257,7 +271,12 @@ export default function HomeContent(props) {
     });
     if (!result?.canceled) {
       setSelectedImage(result?.assets[0]?.uri);
-      SetCurrentLocationFunc(true);
+      if (currentLatitude && currentLongitude) {
+        HandlePoliceStation(true);
+      }
+      else {
+        SetCurrentLocationFunc(true);
+      }
     }
   };
 
